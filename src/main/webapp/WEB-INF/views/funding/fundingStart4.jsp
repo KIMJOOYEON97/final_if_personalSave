@@ -61,7 +61,7 @@
 
 
                 <p class="lead">
-                    <button type="button" class="btn btn-secondary btn-lg "> &lt; 이전 </button> 
+                    <button type="button" class="btn btn-secondary btn-lg " onclick ="location.href='${pageContext.request.contextPath}/funding/fundingStart3'"> &lt; 이전 </button> 
                     <a class="btn btn-primary btn-lg" href="#" role="button" style="width: 200px;"  onclick="location.href='${pageContext.request.contextPath}/funding/fundingStart5';">다음</a>
                 </p>
         

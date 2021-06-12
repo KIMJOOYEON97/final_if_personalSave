@@ -28,21 +28,21 @@
 		update
 			funding
 		set
-			rate_plan_code = #{charge}
+			rate_plan_code = '${charge}'
 		where
-			funding_no = #{no}	
+			funding_no = ${no}	
 	</update>
 	<update id="saveBasicInfo">
 		update
 			funding
 		set
-			category_code = #{category_code},
-			title = #{title},
-			goal_amount = #{goal_amount},
+			category_code = ${categoryCode},
+			title = ${title},
+			goal_amount = ${goalAmount},
 			reg_date = default,
-			d_day = #{d_day}			
+			d_day = ${dDay}			
 		where
-			funding_no = #{funding_no}	
+			funding_no = ${fundingNo}	
 	</update>
 	<insert id="insertAttachment">
 	insert into
@@ -54,9 +54,9 @@
 		)
 		values(
 			seq_attachment_no.nextval,
-			#{funding_no},
-			#{originalFilename},
-			#{renamedFilename}
+			${fundingNo},
+			${originalFilename},
+			${renamedFilename}
 		
 		)
 	</insert>
@@ -66,29 +66,96 @@
 			funding
 		<set>
 			<if test="content !='' and  content != null">
-			content = #{content},
+			content = ${content},
 			</if>
-			<if test="early_content !='' and  early_content != null">
-			early_content = #{early_content},
+			<if test="earlyContent !='' and  earlyContent != null">
+			early_content = ${earlyContent},
 			</if>
-			
-			start_date = #{start_date}
+			<if test="startDate != null">
+			start_date = ${startDate}
+			</if>
 				
 		</set>	
 		where
-			funding_no = #{funding_no}	
+			funding_no = ${fundingNo}	
 	</update>
-	
 	<!-- 박요한 -->
 	<!-- 배기원 -->
+<!--  <resultMap type="fundingExt" id="fundingMap">
+		<id column="no" property="no"></id>
+		<result column="title" property="title"/>
+		<result column="category_code" property="category_code"/>
+		<result column="now_amount" property="now_amount"/>
+		<result column="goal_amount" property="goal_amount"/>
+		<result column="rate_plan_code" property="rate_plan_code"/>
+		<result column="writer_no" property="writer_no"/>
+		<result column="readcount" property=""/>
+	</resultMap> -->
+		<select id="indexfundingList" resultType="funding">
+				select rownum, f.*
+		from (
+		        select *
+		        from funding  
+		        where <![CDATA[ start_date < sysdate and d_day > sysdate]]>
+		        order by reg_date  desc
+		        ) f
+		where rownum between 1 and 6
+	    </select>
+	    
+	    <select id="indexfundinglike" resultType="funding">
+			    	select rownum, f.*
+		from (
+		        select *
+		        from funding   
+		      where <![CDATA[ start_date < sysdate and d_day > sysdate]]>
+		        order by like_count desc
+		        ) f
+		where rownum between 1 and 5
+	    </select>
 	<!-- 이승우 -->
 	<select id="selectFundingList" resultType="funding">
 		select
 			*
 		from
 			funding f
-		order by
-			funding_no desc
+		<where>
+			title like '%' || '${searchKeyword}' || '%'
+			<if test="searchSelect1 == 'processing'">
+			and d_day <![CDATA[>]]> sysdate
+			</if>
+			<if test="searchSelect1 == 'quit'">
+			and d_day <![CDATA[<]]> sysdate
+			</if>
+		</where>
+		<if test="searchSelect2 == 'recent'">
+		order by reg_date desc
+		</if>
+		<if test="searchSelect2 == 'recommand'">
+		order by like_count desc
+		</if>
 	</select>
 	<!-- 천호현 -->
+	<select id="selectFunding" resultMap="fundingVoMap">
+		select *
+		from funding F
+		    join funding_reward R
+		    on F.funding_no = R.funding_no
+		    join attachment A
+		    on f.funding_no = A.funding_no
+		    join like_record L
+		    on L.funding_no = F.funding_no
+		where f.funding_no =#{funding_no}
+	</select>
+	<select id="selectOneFunding" resultType="funding">
+		select
+			*
+		from
+			funding
+		where
+			funding_no = #{funding_no}
+	</select>
+	
+	<resultMap type="fundingExt" id="fundingVoMap">
+	
+	</resultMap>
 </mapper>

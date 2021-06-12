@@ -1,5 +1,6 @@
 package com.kh.interactFunding.funding.model.dao;
 
+
 import java.util.List;
 import java.util.Map;
 
@@ -9,8 +10,15 @@ import org.springframework.stereotype.Repository;
 
 import com.kh.interactFunding.funding.model.vo.Attachment;
 import com.kh.interactFunding.funding.model.vo.Funding;
+
+import com.kh.interactFunding.funding.model.vo.Funding_reward;
+
 import com.kh.interactFunding.funding.model.vo.FundingExt;
 
+
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Repository
 public class FundingDaoImpl implements FundingDao{
 	
@@ -52,14 +60,45 @@ public class FundingDaoImpl implements FundingDao{
 	//박요한
 	
 	//배기원
-	
+	@Override
+	public List<Funding> indexfundingList() {
+		return session.selectList("funding.indexfundingList");
+	}
+	@Override
+	public List<Funding> indexfundinglike() {
+		return session.selectList("funding.indexfundinglike");
+	}
+
+	@Override
+	public List<Funding_reward> indexfuding_rewardList() {
+		// TODO Auto-generated method stub
+		return session.selectList(null);
+	}
+
+
+
 	//이승우
 	@Override
-	public List<Funding> fundingList() {
-		return session.selectList("funding.selectFundingList");
+	public List<Funding> fundingList(Map<String, Object> map) {
+		log.debug("map@dap = {}",map);
+		return session.selectList("funding.selectFundingList", map);
 	}
+
+	@Override
+	public List<Funding> fundingSearchList() {
+		return session.selectList("funding.searchFundingList");
+	}
+
 	//천호현
 
+	@Override
+	public Funding selectOneFunding(int funding_no) {
+		return session.selectOne("funding.selectOneFunding", funding_no);
+	}
 
+	@Override
+	public List<Funding> selectFunding(int funding_no) {
+		return session.selectList("funding.selectFunding", funding_no);
+	}
 	
 }

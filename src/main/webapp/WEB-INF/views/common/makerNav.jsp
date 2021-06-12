@@ -34,15 +34,26 @@ function cancel(){
     location.href=`${pageContext.request.contextPath}/makerFunding/cancel.do`;
 
 }
-</script>   
- 
-<script>
+
 window.setTimeout(function() {
     $(".alert").fadeTo(500, 0).slideUp(500, function(){
         $(this).remove(); 
     });
 }, 2000);
+
 </script>
+
+<style>
+.hoveref{
+	color: black;
+}
+
+.hoveref:hover{
+	background-color: #D3D3D3;
+	color: black;
+	text-decoration-line: none;
+}
+</style>
  
 </head>
 
@@ -57,7 +68,7 @@ window.setTimeout(function() {
         <!-- 이름 여기에 불러올것 -->
         <div class="makerName"><img src="${pageContext.request.contextPath}/resources/image/skycraper.png">00</div>
         <div>
-            <button type="button" class="border-0">나가기</button>
+            <button type="button" class="border-0" onclick ="location.href='${pageContext.request.contextPath}'">나가기</button>
         </div>
     </nav>
 
@@ -79,22 +90,21 @@ window.setTimeout(function() {
                 <br>
                 프로젝트 번호 
                 <!-- 프로젝트 번호 불러오기 -->
-                <%-- <p id="funding_no">${funding.funding_no}</p> --%>
-                <p id="funding_no">${funding.funding_no}</p>
+                <p id="funding_no">${funding.fundingNo}</p>
             </div>
         </div>
 
 
    
         <div class="navbar-header">
-            <li class="navbar-toggle list-group-item " data-toggle="collapse" data-target="#fundingReady"> 펀딩준비</li>
+            <li class="navbar-toggle list-group-item hoveref font-weight-bold" data-toggle="collapse" data-target="#fundingReady">펀딩준비</li>
         </div>
         <div class="collapse navbar-collapse border" id="fundingReady">
             <ul class="nav navbar-nav">
-                <li class="p-3"><a href="${pageContext.request.contextPath}/funding/ready2Charge">요금제 선택</a></li>
-                <li class="p-3"><a href="${pageContext.request.contextPath}/funding/ready3BasicInfo">기본 정보</a></li> 
-                <li class="p-3"><a href="${pageContext.request.contextPath}/funding/ready4Story">스토리 작성</a></li> 
-                <li class="p-3"><a href="${pageContext.request.contextPath}/funding/ready5Reward">리워드 설계</a></li>
+                <li class="hoveref p-3"><a class="hoveref" href="${pageContext.request.contextPath}/funding/ready2Charge">요금제 선택</a></li>
+                <li class="hoveref p-3"><a class="hoveref" href="${pageContext.request.contextPath}/funding/ready3BasicInfo">기본 정보</a></li> 
+                <li class="hoveref p-3"><a class="hoveref" href="${pageContext.request.contextPath}/funding/ready4Story">스토리 작성</a></li> 
+                <li class="hoveref p-3"><a class="hoveref" href="${pageContext.request.contextPath}/funding/ready5Reward">리워드 설계</a></li>
             </ul>
         </div>
 
@@ -141,7 +151,7 @@ window.setTimeout(function() {
 
 
         <div class="navbar-header">
-            <li class="navbar-toggle list-group-item font-weight-bold" data-toggle="collapse" data-target="#myNavbar">광고 센터</li>
+            <li class="hoveref navbar-toggle list-group-item font-weight-bold" data-toggle="collapse" data-target="#myNavbar">광고 센터</li>
         </div>
         <div class="collapse navbar-collapse border" id="myNavbar">
             <ul class="nav navbar-nav">
@@ -149,7 +159,7 @@ window.setTimeout(function() {
         </div>
     
         <div class="navbar-header">
-            <li class="navbar-toggle list-group-item font-weight-bold" data-toggle="collapse" data-target="#myNavbar">수수료 관리</li>
+            <li class="hoveref navbar-toggle list-group-item font-weight-bold" data-toggle="collapse" data-target="#myNavbar">수수료 관리</li>
         </div>
         <div class="collapse navbar-collapse border" id="myNavbar">
             <ul class="nav navbar-nav">
@@ -157,7 +167,7 @@ window.setTimeout(function() {
         </div>
 
         <div class="navbar-header">
-            <li class="navbar-toggle list-group-item font-weight-bold" data-toggle="collapse" data-target="#myNavbar">자료 및 도움말</li>
+            <li class="hoveref navbar-toggle list-group-item font-weight-bold" data-toggle="collapse" data-target="#myNavbar">자료 및 도움말</li>
         </div>
         <div class="collapse navbar-collapse border" id="myNavbar">
             <ul class="nav navbar-nav">

@@ -59,12 +59,13 @@ create table member(
     platform varchar2(100),
     access_token varchar2(300),
     point number,
-    member_role char(1),
     reg_date date default sysdate,
-    phone char(11) not null,
-    constraint pk_member_no primary key(member_no),
-    constraint ck_member_role check(member_role in ('A','U'))
+    phone char(11),
+    constraint pk_member_no primary key(member_no)
 );
+commit;
+rollback;
+
 --회원테이블 seq
 create sequence seq_member_no;
 
@@ -173,8 +174,8 @@ create table funding(
     goal_amount number,--목표금액
     rate_plan_code varchar2(10),--요금제,
     writer_no number,
-    readCount number,
-    like_count number,
+    readCount number default 0,
+    like_count number default 0,
     content clob,
     early_content clob,--얼리버드용
     start_date date,
@@ -280,7 +281,8 @@ create or replace trigger trig_like
     for each row
 begin
     update funding
-    set like_count = like_count+1;
+    set like_count = like_count+1
+    where funding_no = :new.funding_no;
 end;
 /
 
@@ -345,11 +347,63 @@ create sequence seq_admin_board_no;
 
 
 --김윤수 테스트영역
-select * from member;
+select * from member; 
+select count(*) from member  where email = 'kimdia200@naver.com';
+desc member;
+insert into member(member_no, email, password, name, platform, reg_date) values(seq_member_no.nextval, 'email', 'password', 'name', 'platform', default);
+
+select rownum, f.*
+from (
+        select *
+        from funding  
+        where start_date < sysdate and d_day > sysdate
+        order by reg_date  desc
+        ) f
+where rownum between 1 and 6;
+update funding
+set d_day = '21/06/20';
+commit;
+
+alter table funding
+modify readCount number default 0;
+
+select * from funding;
 --김경태 테스트영역
 
 --김주연 테스트영역
 select * from category;
+
+select  
+rownum, f.*
+from (
+        select funding.* ,
+        REPLACE(category_code, 'C1', '테크.가전'),
+        REPLACE(category_code, 'C5', '게임.취미')적용결과
+        from funding  
+        where start_date < sysdate and d_day > sysdate
+        order by reg_date  desc
+        ) f
+where rownum between 1 and 6;
+select  
+rownum,  f.*
+from (
+        select funding.* ,
+        CASE category_code
+                 WHEN 'C1' THEN '테크.가전'
+                 WHEN 'C2' THEN '푸드'
+                 WHEN  'C3' THEN '여행'
+                 WHEN  'C4' THEN '스포츠'
+                 WHEN 'C5' THEN '게임.취미'
+                 WHEN 'C6' THEN '모임'
+                 WHEN  'C7' THEN  '반려동물'
+                 WHEN  'C8' THEN '기부.후원'
+                 END
+        from funding  
+        where start_date < sysdate and d_day > sysdate
+        order by reg_date  desc
+        ) f
+where rownum between 1 and 6;
+
 
 --박요한 테스트영역
 
@@ -358,12 +412,52 @@ select * from category;
 --이승우 테스트영역
 
 --천호현 테스트영역
+select * from funding;
+select * from funding_reward;
+        select
+			*
+		from
+			funding
+		where
+			funding_no =9;
+            
+select * from member;
+insert into funding_reward
+values(2, 99, 2000, '옵션1', '옵션1의 content부분', 2000, 10, '2021/07/01');
+
+
+
+    
+insert into funding
+values (99, '테스트', 'C1', 20000, 100000,'P1' ,21, 0,0,'내용이 엄청길ㅇ', null, '2021/06/10', '2021/06/30', default, '01091342261');
+
+insert into attachment
+values (1,99,'테스트오리지날1','테스트리네임','Y');
+
+insert into like_record
+values (3,99,21,'N');
+
+select * from like_record;
+
+select * from funding;
+
+select *
+from funding F 
+    join funding_reward R 
+    on F.funding_no = R.funding_no
+    join attachment A
+    on f.funding_no = A.funding_no
+    join like_record L
+    on L.funding_no = F.funding_no
+where f.funding_no =99;
+
+
+
+--alter table funding
+--modify readcount number default 0;
 
 -----------------------
 select * from tab;
 
 
 commit;
-
-
-

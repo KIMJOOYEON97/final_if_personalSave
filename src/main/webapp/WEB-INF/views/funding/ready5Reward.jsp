@@ -27,7 +27,6 @@
 <%
 	Calendar today = Calendar.getInstance();
 	SimpleDateFormat sdf =new SimpleDateFormat("yyyy/MM");
-	long
 %>
     <div class="container p-5">
 
@@ -198,8 +197,8 @@
                     <select class="form-control" aria-label=".form-select-sm example">
                         <option selected class="text-muted" disabled>연도/월</option>
                         <!-- 동적으로 12개월 불러오기 -->
-                        <option value="1"><%=sf.format(nowTime)%></option>
-                 		<option value="2"><%=sf.format(nowTime)%></option>
+                        <option value="1"></option>
+                 		<option value="2"></option>
                      	
                         <!-- 이어서 -->
                     </select>

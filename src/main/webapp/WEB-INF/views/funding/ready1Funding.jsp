@@ -75,10 +75,10 @@
             </div>
             <div class="modal-footer d-flex justify-content-between">
                 <div>
-                    <input type="checkbox" id="noSeeWeek">
+                    <input name="modal-today-close" type="checkbox" id="noSeeWeek">
                     <label class="text-muted" for="noSeeWeek">일주일 보지 않기</label>
                 </div>
-                <button type="button" class="border-0 text-info" data-dismiss="modal">닫기</button>
+                <button id="close" type="button" class="border-0 text-info" data-dismiss="modal">닫기</button>
             </div>
         </div>
         </div>
@@ -170,10 +170,58 @@
         </div>
         </section>
 <script>
+
+	//일주일 동안 보지 않기 setCookie 메소드를 통해 쿠키 이름과 expires(유효시간)을 쿠키에 저장시킨다. 
+	function setCookie(name, value, expiredays){
+		var today = new Date();
+	
+		console.log(today.getDate())
+	
+		today.setDate(today.getDate() + expiredays); // 현재시간에 일주일를 더함 
+	
+		document.cookie = name + '=' + escape(value) + '; expires=' + today.toGMTString();
+	
+	}
+		
+	function getCookie(name) {
+	
+		var cookie = document.cookie;
+		
+		if (document.cookie != "") {
+			var cookie_array = cookie.split("; ");
+			console.log(cookie_array)
+			for ( var index in cookie_array) {
+				var cookie_name = cookie_array[index].split("=");
+				if (cookie_name[0] == "mycookie") {
+					return cookie_name[1];
+				}
+			}
+		}
+		return;
+	}
+
+	$('#close').click(function() {
+		console.log("click");
+		if($("input[name='modal-today-close']").is(":checked")){
+			$("#makerGuide").modal("hide");
+			setCookie("mycookie", 'popupEnd', 7);
+		}
+	})
+
+	
+	
+	
+	
     //팝업 페이지
     $(document).ready(function(){
-        $("#makerGuide").modal()
-    });
+    	var checkCookie = getCookie("mycookie");
+		
+    	if(checkCookie == 'popupEnd') {
+    		$("#makerGuide").modal("hide");
+    	} else {
+    		$('#makerGuide').modal("show");	
+    	}
+    }); 
 
     //클릭시 페이지 이동
     function makerMovePage(pagename){

@@ -30,7 +30,7 @@
         <p>약정 체결 등 모든 준비가 완료되면 오픈이 승인됩니다. 메이커님이 직접 '바로 오픈' 혹은 '오픈예약’ 할 수 있습니다.</p>
         
         <p class="lead">
-            <button type="button" class="btn btn-secondary btn-lg"> &lt; 이전 </button> 
+            <button type="button" class="btn btn-secondary btn-lg" onclick ="location.href='${pageContext.request.contextPath}/funding/fundingStart2'"> &lt; 이전 </button> 
             <a class="btn btn-primary btn-lg" href="#" role="button" style="width: 200px;"  onclick="location.href='${pageContext.request.contextPath}/funding/fundingStart4';">다음</a>
         </p>
 

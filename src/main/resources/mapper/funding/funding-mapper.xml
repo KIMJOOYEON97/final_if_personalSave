@@ -6,6 +6,18 @@
 	<!-- 김윤수 -->
 	<!-- 김경태 -->
 	<!-- 김주연 -->
+	<select id="statusYList" resultMap="fundingMap">
+		select
+			*
+		from
+			funding
+		where
+			writer_no = ${memberNo}
+			and status = 'Y'
+	</select>
+	<resultMap type="FundingExt" id="fundingMap">
+		<result column="status" property="status" typeHandler="booleanYnTypeHandler"/>
+	</resultMap>
 	<insert id="ready1FundingInsertNo">
 		insert into
 			funding(
@@ -36,11 +48,11 @@
 		update
 			funding
 		set
-			category_code = ${categoryCode},
-			title = ${title},
+			category_code = '${categoryCode}',
+			title = '${title}',
 			goal_amount = ${goalAmount},
 			reg_date = default,
-			d_day = ${dDay}			
+			d_day = ${dDay}
 		where
 			funding_no = ${fundingNo}	
 	</update>
@@ -65,20 +77,29 @@
 		update
 			funding
 		<set>
-			<if test="content !='' and  content != null">
+		
 			content = ${content},
-			</if>
-			<if test="earlyContent !='' and  earlyContent != null">
+		
 			early_content = ${earlyContent},
-			</if>
-			<if test="startDate != null">
+			
+		
 			start_date = ${startDate}
-			</if>
 				
 		</set>	
 		where
 			funding_no = ${fundingNo}	
 	</update>
+	
+	<update id="finalSubmit">
+		update
+			funding
+		set
+			status = 'Y'
+		where
+			funding_no = ${fundingNo}
+	</update>
+	
+	
 	<!-- 박요한 -->
 	<!-- 배기원 -->
 <!--  <resultMap type="fundingExt" id="fundingMap">

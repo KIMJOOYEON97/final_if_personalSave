@@ -30,6 +30,7 @@
 </style>
 <!-- 요금제 코드 사용 rate_plan_code -->
     <div class="container p-5">
+    <form action=""></form>
 		<input type="hidden" id="hide_funding_no" value="${funding.fundingNo}">
         <h1 class="font-weight-bold"> 요금제 선택</h1>
         <p class="text-muted">원하는 요금제를 선택해주세요</p>
@@ -189,6 +190,9 @@ function saveCharge(){
 		url:`${pageContext.request.contextPath}/funding/saveCharge/\${no}/\${charge}`,
 		method: "put",
 		success(data){
+			console.log(data);
+			const {msg} = data;
+			window.location.href = `${pageContext.request.contextPath}/funding/ready1Funding/\${msg}`;
 		},
 		error: console.log
 		});

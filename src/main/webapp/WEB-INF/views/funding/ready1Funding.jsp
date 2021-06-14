@@ -109,7 +109,7 @@
                 <br>
                 <p class="h3 d-inline"> 요금제 선택 </p> &nbsp;&nbsp; 
                 <!-- 작성 완료하면 작성 완료로 변경 -->
-                <span class="d-inline">작성 전</span> 
+                <span id="chargeWrite" class="d-inline">작성 전</span> 
                 <button type="button" class=" btn btn-outline-secondary btn-lg float-right" onclick="makerMovePage('2Charge')">
                     작성하기
                 </button>
@@ -121,7 +121,7 @@
             <div class="border rounded p-3">
                 <br>
                 <p class="h3 d-inline">기본 정보</p> &nbsp;&nbsp; 
-                <span class="d-inline">작성 전</span> 
+                <span id="InfoWrite" class="d-inline">작성 전</span> 
                 <button type="button" class=" btn btn-outline-secondary btn-lg float-right" onclick="makerMovePage('3BasicInfo')">
                     작성하기
                 </button>
@@ -133,7 +133,7 @@
             <div class="border rounded p-3">
                 <br>
                 <p class="h3 d-inline">스토리 작성</p> &nbsp;&nbsp; 
-                <span class="d-inline">작성 전</span> 
+                <span id="storyWrite" class="d-inline">작성 전</span> 
                 <button type="button" class=" btn btn-outline-secondary btn-lg float-right" onclick="makerMovePage('4Story')">
                     작성하기
                 </button>
@@ -145,7 +145,7 @@
             <div class="border rounded p-3">
                 <br>
                 <p class="h3 d-inline">리워드 설계</p> &nbsp;&nbsp; 
-                <span class="d-inline">작성 전</span> 
+                <span id="rewardWrite" class="d-inline">작성 전</span> 
                 <button type="button" class=" btn btn-outline-secondary btn-lg float-right" onclick="makerMovePage('5Reward')">
                     작성하기
                 </button>
@@ -157,7 +157,7 @@
 			 <div class="border rounded p-3">
                 <br>
                 <p class="h3 d-inline">관리</p> &nbsp;&nbsp; 
-                <span class="d-inline">작성 전</span> 
+                <span  class="d-inline">작성 전</span> 
                 <button type="button" class=" btn btn-outline-secondary btn-lg float-right" onclick="makerMovePage('6Reward')">
                     작성하기
                 </button>
@@ -166,10 +166,26 @@
             </div>
             <br>
 
-
+			<button id="start" class="btn btn-primary btn-lg" role="button" style="width: 200px;"  onclick="finalSubmit()" disabled>제출하기</button>
+			
         </div>
         </section>
 <script>
+
+	//최종 제출 status Y로 바꾸기
+	function finalSubmit(){
+		$.ajax({
+			url:`${pageContext.request.contextPath}/funding/finalSubmit`,
+			method: "put",
+			success(data){
+				console.log(data);
+				const {msg} = data;
+				window.location.href = `${pageContext.request.contextPath}/funding/ready1Funding/\${msg}`;
+			},
+			error: console.log
+			});
+	
+	}
 
 	//일주일 동안 보지 않기 setCookie 메소드를 통해 쿠키 이름과 expires(유효시간)을 쿠키에 저장시킨다. 
 	function setCookie(name, value, expiredays){

@@ -105,48 +105,6 @@ $(() =>{
 });
 
 
-/* function saveBasicInfo(){
-
-	const funding_no = ${funding.funding_no};
-	const form = $("#basicInfo")[0];
-	const $frm = $("#basicInfo");
-	const formData = new FormData(form);
-	console.log(formData);
-	
-	const title = $frm.find("[name = title]").val();
-	const goal_amount = $frm.find("[name = goal_amount]").val();
-	const category_code = $("#makerCategory option:selected").val();
-	const d_day = $frm.find("[name = d_day]").val();
-
-	
-	const funding ={
-			funding_no,
-			title,
-			goal_amount,
-			category_code,
-			d_day,
-			formData
-			}
-
-	console.log(funding);
-    
-	$.ajax({
-		url:`${pageContext.request.contextPath}/funding/saveBasicInfo`,
-		contentType: "application/json; charset=utf-8",
-		data:  JSON.stringify(funding),
-	    enctype: 'multipart/form-data',
-		dataType:'json',
-		contentType : false,
-        processData : false,
-		
-		method: "put",
-		success(data){
-			console.log(data);
-		},
-		error: console.log
-		});
-}; */
-
 /* function basicInfoValidate(){
 	var $projectTitle = $("[name=title]");
 	if(/^(.|\n)+$/.test($title.val()) == false){
@@ -174,6 +132,7 @@ function readURL(input) {
 		var reader = new FileReader();
 		reader.onload = function(e) {
 			$('#imgArea').attr('src', e.target.result); 
+			console.log(e.target.result);
 		}
 		reader.readAsDataURL(input.files[0]);
 	}

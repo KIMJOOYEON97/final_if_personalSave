@@ -3,7 +3,7 @@
 <%@page import="java.util.Date"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-
+<%@ taglib prefix = "c" uri="http://java.sun.com/jsp/jstl/core" %>
 <jsp:include page="/WEB-INF/views/common/makerNav.jsp" flush="false">
     <jsp:param value="Reward | IF Maker Studio" name="title"/>
 </jsp:include>
@@ -25,7 +25,8 @@
 }
 </style>
 <%
-	Calendar today = Calendar.getInstance();
+	Calendar cal = Calendar.getInstance();
+	Date nowTime = new Date();
 	SimpleDateFormat sdf =new SimpleDateFormat("yyyy/MM");
 %>
     <div class="container p-5">
@@ -106,7 +107,7 @@
         <div id="makerRewardInsert" class="modal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document" >
             <div class="modal-content">
-            <form name="rewardInsertFrm" ${pageContext.request.contextPath}/markerFuning/insertReward.do" method="post">
+            <form name="rewardInsertFrm" action="${pageContext.request.contextPath}/funing/insertReward" method="PUT">
                 <div class="modal-header">
                     <p class="font-weight-bold">리워드 추가</p>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -196,10 +197,16 @@
                     <div class="input-group-prepend">
                     <select class="form-control" aria-label=".form-select-sm example">
                         <option selected class="text-muted" disabled>연도/월</option>
-                        <!-- 동적으로 12개월 불러오기 -->
-                        <option value="1"></option>
-                 		<option value="2"></option>
-                     	
+                        <option value="<%=sdf.format(nowTime)%>"><%=sdf.format(nowTime)%></option>
+                        <!-- 동적으로 12개월 불러오기-->
+                       	  <%
+                       	  for(int i = 0; i<=11; i++){
+                       		 nowTime.setMonth(nowTime.getMonth() + 1); 
+                       	  %>
+                 			<option value="<%=sdf.format(nowTime)%>"><%=sdf.format(nowTime)%></option>
+               			<%
+                       	  } %>
+                     
                         <!-- 이어서 -->
                     </select>
                     &nbsp;
@@ -235,9 +242,9 @@
          <div id="makerRewardUpdate" class="modal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document" >
             <div class="modal-content">
-            <form name="rewardUpdateFrm" ${pageContext.request.contextPath}/funding/updateReward.do" method="post">
+            <form name="rewardUpdateFrm" action="${pageContext.request.contextPath}/funding/updateReward" method="POST">
                  <div class="modal-header">
-                    <p class="font-weight-bold">리워드 추가</p>
+                    <p class="font-weight-bold">리워드 수정</p>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -379,13 +386,13 @@
                     <p class="card-text text-muted">상세설명</p>
                     <!-- 배송비 불러오기 -->
                     <div class="d-flex justify-content-between">
-                        <h6 class="font-weight-bold text-muted">배송비</h6>
-                        <h6 class="card-subtitle mb-2 text-muted">00원</h6>
+                        <p class="font-weight-bold text-muted">배송비</p>
+                        <p class="card-subtitle mb-2 text-muted">00원</p>
                     </div>
                     <!-- 리워드 발송 시작일 불러오기 -->
                     <div class="d-flex justify-content-between">
-                        <h6 class="font-weight-bold text-muted">리워드 발송 시작일</h6>
-                        <h6 class="card-subtitle mb-2 text-muted">0000년 00월 {시기}</h6>
+                        <p class="font-weight-bold text-muted">리워드 발송 시작일</p>
+                        <p class="card-subtitle mb-2 text-muted">0000년 00월 {시기}</p>
                     </div>
                     
                     <div class="d-flex justify-content-end">

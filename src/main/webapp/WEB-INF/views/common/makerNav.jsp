@@ -53,6 +53,15 @@ window.setTimeout(function() {
 	color: black;
 	text-decoration-line: none;
 }
+
+.aTag{
+	color: black;
+}
+.aTag:hover{
+	color: black;
+	text-decoration-line: none;
+}
+
 </style>
  
 </head>
@@ -66,7 +75,9 @@ window.setTimeout(function() {
             <img src="" width="30" height="30" alt="">
         </a>
         <!-- 이름 여기에 불러올것 -->
-        <div class="makerName"><img src="${pageContext.request.contextPath}/resources/image/skycraper.png">00</div>
+        <a class="aTag" href="${pageContext.request.contextPath}/funding/ready1Funding"><div class="makerName">
+        	<img src="${pageContext.request.contextPath}/resources/image/skycraper.png" style="width: 25px">
+        	00</div></a>
         <div>
             <button type="button" class="border-0" onclick ="location.href='${pageContext.request.contextPath}'">나가기</button>
         </div>
@@ -177,6 +188,7 @@ window.setTimeout(function() {
     </div>
     
 	<section>
+	
 	<!-- 알람 -->
 	<c:if test="${not empty msg}">
 	  <div class="alert alert-success" role="alert">

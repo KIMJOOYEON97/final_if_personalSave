@@ -12,7 +12,7 @@ import com.kh.interactFunding.funding.model.vo.Attachment;
 import com.kh.interactFunding.funding.model.vo.Funding;
 
 import com.kh.interactFunding.funding.model.vo.Funding_reward;
-
+import com.kh.interactFunding.member.model.vo.Member;
 import com.kh.interactFunding.funding.model.vo.FundingExt;
 
 
@@ -30,6 +30,11 @@ public class FundingDaoImpl implements FundingDao{
 	//김경태
 	
 	//김주연
+	@Override
+	public List<Funding> statusYList(Member loginMember) {
+		// TODO Auto-generated method stub
+		return session.selectList("funding.statusYList",loginMember);
+	}
 	@Override
 	public int ready1FundingInsertNo(Funding funding) {
 		// TODO Auto-generated method stub
@@ -55,7 +60,11 @@ public class FundingDaoImpl implements FundingDao{
 		// TODO Auto-generated method stub
 		return session.update("funding.saveStory",funding);
 	}
-	
+	@Override
+	public int finalSubmit(Funding funding) {
+		// TODO Auto-generated method stub
+		return session.update("funding.finalSubmit",funding);
+	}
 	
 	//박요한
 	
@@ -100,5 +109,7 @@ public class FundingDaoImpl implements FundingDao{
 	public List<Funding> selectFunding(int funding_no) {
 		return session.selectList("funding.selectFunding", funding_no);
 	}
+
+	
 	
 }

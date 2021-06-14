@@ -372,6 +372,26 @@ select * from funding;
 
 --김주연 테스트영역
 select * from category;
+select * from funding;
+update
+			funding
+		set
+			category_code = 'C1',
+			title = '안녕하세요',
+			goal_amount = 502000,
+			reg_date = default,
+			d_day = 'Tue Jun 22 00:00:00 KST 2021' 			
+		where
+			funding_no = '21';	
+
+update
+    funding
+    set 
+    status = 'N'
+    where 
+        writer_no = 21
+        and funding_no= 99;
+commit;
 
 select  
 rownum, f.*

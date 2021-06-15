@@ -25,8 +25,8 @@
 }
 </style>
 <%
-	Calendar cal = Calendar.getInstance();
 	Date nowTime = new Date();
+	Date nowTime2 = new Date();
 	SimpleDateFormat sdf =new SimpleDateFormat("yyyy/MM");
 %>
     <div class="container p-5">
@@ -206,8 +206,6 @@
                  			<option value="<%=sdf.format(nowTime)%>"><%=sdf.format(nowTime)%></option>
                			<%
                        	  } %>
-                     
-                        <!-- 이어서 -->
                     </select>
                     &nbsp;
                     <select class="form-control" aria-label=".form-select-sm example">
@@ -331,12 +329,16 @@
                     <h6 class="font-weight-bold">발송시작일</h6>
                     <div class="input-group-prepend">
                     <select class="form-control" aria-label=".form-select-sm example">
-                        <option selected class="text-muted" disabled>연도/월</option>
-                        <!-- 동적으로 12개월 불러오기 -->
-                        <option value="1">2021/06</option>
-                        <option value="2">2021/07</option>
-                        <option value="3">2021/08</option>
-                        <!-- 이어서 -->
+                          <option selected class="text-muted" disabled>연도/월</option>
+                        <option value="<%=sdf.format(nowTime2)%>"><%=sdf.format(nowTime2)%></option>
+                        <!-- 동적으로 12개월 불러오기-->
+                       	  <%
+                       	  for(int i = 0; i<=11; i++){
+                       		 nowTime2.setMonth(nowTime2.getMonth() + 1); 
+                       	  %>
+                 			<option value="<%=sdf.format(nowTime2)%>"><%=sdf.format(nowTime2)%></option>
+               			<%
+                       	  } %>
                     </select>
                     &nbsp;
                     <select class="form-control" aria-label=".form-select-sm example">

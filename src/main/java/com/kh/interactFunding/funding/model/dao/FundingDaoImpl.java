@@ -31,9 +31,14 @@ public class FundingDaoImpl implements FundingDao{
 	
 	//김주연
 	@Override
-	public List<Funding> statusYList(Member loginMember) {
+	public List<FundingExt> statusYList(Member loginMember) {
 		// TODO Auto-generated method stub
 		return session.selectList("funding.statusYList",loginMember);
+	}
+	@Override
+	public List<FundingExt> statusNList(Member loginMember) {
+		// TODO Auto-generated method stub
+		return session.selectList("funding.statusNList",loginMember);
 	}
 	@Override
 	public int ready1FundingInsertNo(Funding funding) {
@@ -109,6 +114,7 @@ public class FundingDaoImpl implements FundingDao{
 	public List<Funding> selectFunding(int funding_no) {
 		return session.selectList("funding.selectFunding", funding_no);
 	}
+	
 
 	
 	

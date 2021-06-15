@@ -18,7 +18,8 @@ public interface FundingService {
 	//김경태
 	
 	//김주연
-	List<Funding> statusYList(Member loginMember);
+	List<FundingExt> statusYList(Member loginMember);
+	List<FundingExt> statusNList(Member loginMember);
 	int ready1FundingInsertNo(Funding funding);
 	int saveCharge(Map<String, Object> param);
 	int saveBasicInfo(FundingExt funding);

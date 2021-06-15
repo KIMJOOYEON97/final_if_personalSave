@@ -31,10 +31,16 @@ public class FundingServiceImpl implements FundingService{
 	
 	//김주연
 	@Override
-	public List<Funding> statusYList(Member loginMember) {
+	public List<FundingExt> statusYList(Member loginMember) {
 		// TODO Auto-generated method stub
 		return fundingDao.statusYList(loginMember);
 	}
+	@Override
+	public List<FundingExt> statusNList(Member loginMember) {
+		// TODO Auto-generated method stub
+		return  fundingDao.statusNList(loginMember);
+	}
+
 	@Override
 	public int ready1FundingInsertNo(Funding funding) {
 		return fundingDao.ready1FundingInsertNo(funding);

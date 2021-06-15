@@ -372,7 +372,7 @@ select * from funding;
 
 --김주연 테스트영역
 select * from category;
-select * from funding;
+select * from funding; 
 update
 			funding
 		set
@@ -387,11 +387,21 @@ update
 update
     funding
     set 
-    status = 'N'
+    status = 'Y'
     where 
-        writer_no = 21
+        writer_no = 21;
         and funding_no= 99;
 commit;
+
+	select
+			f.*, (select name 
+            from member where member_no = f.writer_no)name
+		from
+			funding f
+        
+		where
+			f.writer_no = 21
+			and f.status = 'Y';
 
 select  
 rownum, f.*

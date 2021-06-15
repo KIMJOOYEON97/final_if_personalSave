@@ -68,38 +68,62 @@ public class FundingController {
 	
 	//김주연
 	@GetMapping("/fundingStart1")
-	public void fundingStart1(HttpSession session) {
+	public void fundingStart1(HttpSession session, Model model) {
 		
 		log.debug("session={}",session.getAttribute("loginMember"));
+		
+		Member loginMember = (Member) session.getAttribute("loginMember");
+		
 		log.debug("fundingStart1");
-		//테스트를 위한 member객체 생성
-		Member loginMember = new Member();
-		loginMember.setMemberNo(21);
+	
 		try {
-			List<Funding> statusYList = fundingService.statusYList(loginMember);
+			List<FundingExt> statusYList = fundingService.statusYList(loginMember);
+			List<FundingExt> statusNList = fundingService.statusNList(loginMember);
 			log.debug("statusYList={}",statusYList);
+			log.debug("statusNList={}",statusNList);
+		
+			model.addAttribute("statusYList", statusYList);
+			model.addAttribute("statusNList", statusNList);
 		} catch (Exception e) {
 			log.error("펀딩 완료 리스트 불러오기 에러",e);
 			throw e;
 		}
 	}
+	@GetMapping("/fundingStart1/{msg}")
+	@ResponseBody
+	public ModelAndView fundingStart1(@PathVariable String msg, ModelAndView mav, HttpServletRequest request) {
+		log.debug("fundingStart1");
+		RedirectView view = new RedirectView(request.getContextPath()+"/funding/fundingStart1");
+		//url관련한 것을 자동으로 붙여주는 속성
+		view.setExposeModelAttributes(false); //이 설정을 할려고 view객체를 사용함
+		mav.setView(view);
+	
+		//ModelAndView와 RedirectAttributes 충돌시 FlashMap을 직접 사용
+		FlashMap flashMap = RequestContextUtils.getOutputFlashMap(request);
+		flashMap.put("msg",msg);
 
+		return mav;
+	}
+	
+	//기존에 있는 것을 이어서 시작할 경우
 	
 
-	
+	//새로 시작하는 경우
 	@GetMapping("/fundingStart2")
 	//public void fundingStart2(Funding funding, HttpSession session) {
-	public void fundingStart2(HttpSession session) {
-		//ready1FundingInsertNo(funding);
+	public void fundingStart2(Funding funding, HttpSession session) {
 		log.debug("fundingStart2");
-		//log.debug("funding_no={}",funding.getFunding_no());
+		Member loginMember = (Member) session.getAttribute("loginMember");
+		funding.setWriterNo(loginMember.getMemberNo());
+		
+		ready1FundingInsertNo(funding);
+		log.debug("funding={}",funding);
 		//session.setAttribute("funding", funding);
-		Funding funding = new Funding();
-		funding.setFundingNo(18);
+//		Funding funding = new Funding();
+//		funding.setFundingNo(18);
 		log.debug("funding_no={}",funding.getFundingNo());
-		session.setAttribute("funding", funding);
 	}
-
+	
 	public void ready1FundingInsertNo(Funding funding) {
 		try {
 			log.debug("ready1Funding");
@@ -112,8 +136,7 @@ public class FundingController {
 	}
 	
 	@GetMapping("/fundingStart3")
-	public void fundingStart3(@SessionAttribute Funding funding) {
-		log.debug("funding={}",funding);
+	public void fundingStart3() {
 		log.debug("fundingStart3");
 	}
 	@GetMapping("/fundingStart4")
@@ -153,20 +176,7 @@ public class FundingController {
 		return mav;
 	}
 	
-	@PutMapping("/finalSubmit")
-	@ResponseBody
-	public Map<String, Object> finalSubmit(
-			@SessionAttribute Funding funding){
-		try {
-				int result =  fundingService.finalSubmit(funding);
-				Map<String, Object> map = new HashMap<String, Object>();
-				map.put("msg","요금제를 저장하였습니다.");		
-				return map;
-		} catch (Exception e) {
-			log.error("saveCharge 등록 에러",e);
-			throw e;
-		}
-	}
+
 	
 	@GetMapping("/ready2Charge")
 	public void ready2Funding() {
@@ -192,7 +202,7 @@ public class FundingController {
 	}
 	
 	@GetMapping("/ready3BasicInfo")
-	public void ready4Funding(@SessionAttribute Funding funding) {
+	public void ready4Funding() {
 		log.debug("ready3BasicInfo");
 	}
 	@PostMapping("/saveBasicInfo")
@@ -251,11 +261,11 @@ public class FundingController {
 	}
 	
 	@GetMapping("/ready4Story")
-	public void ready5Funding(@SessionAttribute Funding funding) {
+	public void ready5Funding(Funding funding) {
 		log.debug("ready4Story");
 	}
 	@PostMapping("/saveStory")
-	public String saveStory(@SessionAttribute Funding funding, RedirectAttributes redirectAttr){
+	public String saveStory(Funding funding, RedirectAttributes redirectAttr){
 		try {
 			log.debug("funding={}",funding);
 
@@ -277,23 +287,42 @@ public class FundingController {
 		return "redirect:/funding/ready1Funding";
 	}
 	@GetMapping("/ready5Reward")
-	public void ready6Funding(@SessionAttribute Funding funding) {
+	public void ready6Funding() {
 		log.debug("ready5Reward");
 	}
 	@PutMapping("/insertReward")
-	public String insertReward(@SessionAttribute Funding funding) {
+	public String insertReward() {
 		
 		return "redirect:/funding/ready5Reward";
 	}
 	@PostMapping("/updateReward")
-	public String updateReward(@SessionAttribute Funding funding) {
+	public String updateReward() {
 		
 		return "redirect:/funding/ready5Reward";
 	}
 	
+	@PutMapping("/finalSubmit")
+	@ResponseBody
+	public Map<String, Object> finalSubmit(){
+		try {
+				//int result =  fundingService.finalSubmit(funding);
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put("msg","최종 제출하였습니다.");		
+				return map;
+		} catch (Exception e) {
+			log.error("최종제출 status YN등록 에러",e);
+			throw e;
+		}
+	}
+	
+	@GetMapping("/checkSMS")
+	public void checkSMS() {
+		
+	}
+	
 	@GetMapping("/checkSMSPhone")
 	@ResponseBody
-	public void checkSMSPhone(@RequestParam String phoneNumber) {
+	public Map<String, Object> checkSMSPhone(@RequestParam String phoneNumber) {
 	    String api_key = "NCSU1PW70UL1PLML";
 	    String api_secret = "BGPK3YEIOVUDDPRLXYM9NWSXIWP5FKZK";
         
@@ -304,8 +333,12 @@ public class FundingController {
             numStr+=ran;
         }
 	    
+        //인증번호 전달
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("numStr", numStr);
+        
 	    Message coolsms = new Message(api_key, api_secret);
-
+	    
 	    // 4 params(to, from, type, text) are mandatory. must be filled
 	    HashMap<String, String> params = new HashMap<String, String>();
 	    params.put("to", phoneNumber);
@@ -320,6 +353,7 @@ public class FundingController {
 	    } catch (CoolsmsException e) {
 	    	log.error("error={},{}",e.getCode(),e.getMessage());
 	    }
+		return map;
 	 }
 	
 	//박요한 push

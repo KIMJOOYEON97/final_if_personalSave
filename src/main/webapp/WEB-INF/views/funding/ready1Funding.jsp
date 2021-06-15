@@ -166,26 +166,13 @@
             </div>
             <br>
 
-			<button id="start" class="btn btn-primary btn-lg" role="button" style="width: 200px;"  onclick="finalSubmit()" disabled>제출하기</button>
+			<button id="checkSMSPhone" class="btn btn-primary btn-lg" role="button" style="width: 200px;" onclick="location.href='${pageContext.request.contextPath}/funding/checkSMS';">제출하기</button>
 			
         </div>
         </section>
 <script>
 
-	//최종 제출 status Y로 바꾸기
-	function finalSubmit(){
-		$.ajax({
-			url:`${pageContext.request.contextPath}/funding/finalSubmit`,
-			method: "put",
-			success(data){
-				console.log(data);
-				const {msg} = data;
-				window.location.href = `${pageContext.request.contextPath}/funding/ready1Funding/\${msg}`;
-			},
-			error: console.log
-			});
-	
-	}
+
 
 	//일주일 동안 보지 않기 setCookie 메소드를 통해 쿠키 이름과 expires(유효시간)을 쿠키에 저장시킨다. 
 	function setCookie(name, value, expiredays){

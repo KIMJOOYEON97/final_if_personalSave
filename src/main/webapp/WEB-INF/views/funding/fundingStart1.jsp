@@ -28,16 +28,39 @@
             <br />
            	<hr />
            	<br />
-        	<h2><strong>만든 프로젝트 정보</strong></h2>
+        	<h2><strong>작성중인 프로젝트 정보</strong></h2>
             
-			<div class="card" style="width: 18rem;">
-			  <img class="card-img-top" src="..." alt="Card image cap">
+            <c:forEach var="funding" items="${statusNList}">
+			<div class="card d-inline-flex m-2" style="width: 18rem;">
+			<!-- 메인이미지 넣을 것  -->
+			  <img class="card-img-top" src="" alt="대표이미지 등록 필요">
 			  <div class="card-body">
-			    <h5 class="card-title">Card title</h5>
-			    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-			    <button class="btn btn-outline-info " type="button" id="sendPhoneNumber" onclick="location.href='${pageContext.request.contextPath}/funding/fundingStart2';">스튜디오 바로가기 </button>
+			    <h5 class="card-title">${funding.title}</h5>
+			<!-- 작성자 불러오기  -->
+			    <p class="card-text">${funding.name}</p>
+			    <button class="btn btn-outline-info " type="button" id="goStudio" onclick="">스튜디오 바로가기 </button>
 			  </div>
 			</div>
+            </c:forEach>
+			
+			<br />
+           	<hr />
+           	<br />
+        	<h2><strong>작성완료한 프로젝트 정보</strong></h2>
+			<c:forEach var="funding" items="${statusYList}">
+			<div class="card d-inline-flex m-2" style="width: 18rem;">
+			<!-- 메인이미지 넣을 것  -->
+			  <img class="card-img-top" src="" alt="대표이미지 등록 필요">
+			  <div class="card-body">
+			    <h5 class="card-title">${funding.title}</h5>
+			    <h5 class="card-title">${loginMember.name}</h5>
+			<!-- 작성자 불러오기  -->
+			    <p class="card-text">${funding.name}</p>
+			    <button class="btn btn-outline-info " type="button" id="goStudio" onclick="">스튜디오 바로가기 </button>
+			  </div>
+			</div>
+            </c:forEach>
+			
     </section>
     
 </body>

@@ -10,11 +10,9 @@ import org.springframework.stereotype.Repository;
 
 import com.kh.interactFunding.funding.model.vo.Attachment;
 import com.kh.interactFunding.funding.model.vo.Funding;
-
-import com.kh.interactFunding.funding.model.vo.Funding_reward;
-import com.kh.interactFunding.member.model.vo.Member;
 import com.kh.interactFunding.funding.model.vo.FundingExt;
-
+import com.kh.interactFunding.funding.model.vo.Reward;
+import com.kh.interactFunding.member.model.vo.Member;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,6 +39,12 @@ public class FundingDaoImpl implements FundingDao{
 		return session.selectList("funding.statusNList",loginMember);
 	}
 	@Override
+	public FundingExt loadFunding(String fundingNo) {
+		// TODO Auto-generated method stub
+		return session.selectOne("funding.loadFunding",fundingNo);
+	}
+
+	@Override
 	public int ready1FundingInsertNo(Funding funding) {
 		// TODO Auto-generated method stub
 		return session.insert("funding.ready1FundingInsertNo",funding);
@@ -66,12 +70,53 @@ public class FundingDaoImpl implements FundingDao{
 		return session.update("funding.saveStory",funding);
 	}
 	@Override
+	public List<Reward> loadReward(String fundingNo) {
+		// TODO Auto-generated method stub
+		return session.selectList("funding.loadReward",fundingNo);
+	}
+	@Override
+	public int insertReward(Reward reward) {
+		// TODO Auto-generated method stub
+		return session.insert("funding.insertReward",reward);
+	}
+	@Override
+	public int updateReward(Reward reward) {
+		// TODO Auto-generated method stub
+		return session.update("funding.updateReward",reward);
+	}
+	@Override
+	public int deleteReward(int rewardNo) {
+		// TODO Auto-generated method stub
+		return session.delete("funding.deleteReward",rewardNo);
+	}
+	@Override
 	public int finalSubmit(Funding funding) {
 		// TODO Auto-generated method stub
 		return session.update("funding.finalSubmit",funding);
 	}
+	@Override
+	public int deleteFunding(String fundingNo) {
+		// TODO Auto-generated method stub
+		return session.delete("funding.deleteFunding",fundingNo);
+	}
+
 	
+
 	//박요한
+	@Override
+	public List<Funding> news(Map<String, Object> param) {
+		return session.selectList("funding.news", param);
+	}
+	
+	@Override
+	public List<Funding> community(Map<String, Object> param) {
+		return session.selectList("funding.community", param);
+	}
+	
+	@Override
+	public List<Funding> supporter(Map<String, Object> param) {
+		return session.selectList("funding.supporter", param);
+	}
 	
 	//배기원
 	@Override
@@ -82,15 +127,18 @@ public class FundingDaoImpl implements FundingDao{
 	public List<Funding> indexfundinglike() {
 		return session.selectList("funding.indexfundinglike");
 	}
-
 	@Override
-	public List<Funding_reward> indexfuding_rewardList() {
-		// TODO Auto-generated method stub
-		return session.selectList(null);
+	public int indexTotalContents() {
+		return session.selectOne("funding.indexTotalContents");
 	}
-
-
-
+	
+	
+	
+	@Override
+	public List<Funding> indexEarlyList() {
+		// TODO Auto-generated method stub
+		return session.selectList("funding.indexEarlyList");
+	}
 	//이승우
 	@Override
 	public List<Funding> fundingList(Map<String, Object> map) {
@@ -99,9 +147,9 @@ public class FundingDaoImpl implements FundingDao{
 	}
 
 	@Override
-	public List<Funding> fundingSearchList() {
-		return session.selectList("funding.searchFundingList");
-	}
+	public List<Map<String, String>> selectCategoryList() {
+		return session.selectList("funding.selectCategoryList");
+	}	
 
 	//천호현
 
@@ -109,11 +157,16 @@ public class FundingDaoImpl implements FundingDao{
 	public Funding selectOneFunding(int funding_no) {
 		return session.selectOne("funding.selectOneFunding", funding_no);
 	}
-
+	
 	@Override
-	public List<Funding> selectFunding(int funding_no) {
-		return session.selectList("funding.selectFunding", funding_no);
+	public int selectOneFunding2(int funding_no) {
+		return session.selectOne("funding.selectOneFunding2", funding_no);
 	}
+
+
+	
+	
+
 	
 
 	

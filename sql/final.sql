@@ -182,7 +182,9 @@ create table funding(
     d_day date,
     reg_date date default sysdate,
     phone char(11),
+    status char(1),
     constraint pk_funding_no primary key(funding_no),
+    constraint ck_funding_status check(status in ('Y','N')),
     constraint fk_funding_category_code foreign key(category_code) references category(category_code) on delete set null,
     constraint fk_funding_writer_no foreign key(writer_no) references member(member_no) on delete set null,
     constraint fk_funding_rate_plan_code foreign key(rate_plan_code) references rate_plan(rate_plan_code) on delete set null
@@ -371,6 +373,30 @@ select * from funding;
 --김경태 테스트영역
 
 --김주연 테스트영역
+
+    select 
+    f.*,
+    (select count(*) from attachment where funding_no= f.funding_no)attach_count
+from 
+    funding f
+where 
+    f.writer_no = 21;
+order by 
+    f.funding_no desc;
+
+select F.*,
+       A.no,
+       A.funding_no,
+       A.originalfilename,
+       A.renamedfilename,
+       A.status Astatus
+from funding F left join attachment A
+on F.funding_no = A.funding_no
+where 
+    writer_no = 41;
+
+
+
 select * from category;
 select * from funding; 
 update
@@ -438,6 +464,83 @@ where rownum between 1 and 6;
 --박요한 테스트영역
 
 --배기원 테스트영역
+select  
+rownum, f.*
+from (
+        select funding.* ,
+         CASE category_code
+         WHEN 'C1' THEN '테크.가전'
+         WHEN 'C2' THEN '푸드'
+         WHEN  'C3' THEN '여행'
+         WHEN  'C4' THEN '스포츠'
+         WHEN 'C5' THEN '게임.취미'
+         WHEN 'C6' THEN '모임'
+         WHEN  'C7' THEN  '반려동물'
+         WHEN  'C8' THEN '기부.후원'
+         END
+        from funding  
+        where start_date < sysdate and d_day > sysdate
+        order by reg_date  desc
+        ) f
+where rownum between 1 and 6;
+
+select rownum, f.*
+from (
+        select *
+        from funding  
+        where start_date <  d_day 
+        order by reg_date  desc
+        ) f
+where rownum between 1 and 5;
+
+select*from funding;
+select*from category;
+SELECT  category_code, 
+       CASE category_code
+         WHEN 'C1' THEN '테크.가전'
+         WHEN 'C2' THEN '푸드'
+         WHEN  'C3' THEN '여행'
+         WHEN  'C4' THEN '스포츠'
+         WHEN 'C5' THEN '게임.취미'
+         WHEN 'C6' THEN '모임'
+         WHEN  'C7' THEN  '반려동물'
+         WHEN  'C8' THEN '기부.후원'
+         END
+  FROM funding;
+  
+  select*from category;
+   
+  select*from funding_reward;
+  
+  select *  from funding;
+  
+select
+    *
+from 
+    funding 
+    where 
+        start_date > sysdate ;
+        
+    select*from funding;
+    
+       update funding  set    goal_amount = 350000  
+    where funding_no  =18;
+    
+  select*from funding where start_date ='2021/06/30';
+  
+insert into funding
+values (25, '펀딩', 'C1', 30000, 500000,'P1' ,21, 0,0,'[향수]냄새는 좋고 너무 행복합니다. ', null, '2021/06/30', '2021/06/11', '2021/06/12', '01012341234');  
+insert into funding
+values (26, '펀딩', 'C1', 30000, 500000,'P1' ,21, 0,0,'[피부]  피부가맑아지는나를 보십쇼 ', null, '2021/06/30', '2021/06/11', '2021/06/12', '01012341234');  
+insert into funding
+values (27, '펀딩', 'C1', 30000, 500000,'P1' ,21, 0,0,'[피부]  피부가맑아지는나를 보십쇼 ', '[피부]  피부가맑아지는나를 보십쇼', '2021/06/30', '2021/06/11', '2021/06/12', '01012341234');
+
+insert into funding
+values (28, '펀딩', 'C1', 30000, 500000,'P1' ,21, 0,0,'[피부]  피부가맑아지는나를 보십쇼 ', ' [피부]  피부가맑아지는나를 보십쇼', '2021/06/30', '2021/06/11', '2021/06/12', '01012341234');
+
+  commit;
+
+
 
 --이승우 테스트영역
 
@@ -467,9 +570,12 @@ values (1,99,'테스트오리지날1','테스트리네임','Y');
 insert into like_record
 values (3,99,21,'N');
 
-select * from like_record;
+insert into funding_participation
+values (3,99,21, '2021/06/10', 'Y', 2, 3000, '안양', '김윤수', '0102222261','빨리주세요');
 
-select * from funding;
+select * from funding_reward;
+
+select * from funding_participation;
 
 select *
 from funding F 
@@ -481,11 +587,62 @@ from funding F
     on L.funding_no = F.funding_no
 where f.funding_no =99;
 
+select *
+from funding F 
+    join funding_reward R 
+    on F.funding_no = R.funding_no
+    join attachment A
+    on F.funding_no = A.funding_no
+    join member M
+    on F.writer_no = M.member_no
+where f.funding_no =99;
+
 
 
 --alter table funding
 --modify readcount number default 0;
 
+select * from funding;
+ALTER TABLE funding ADD status char(1);
+
+ALTER TABLE funding ADD CONSTRAINT ck_funding_status  CHECK (status in ('Y','N'));
+
+desc  funding;
+desc message;
+
+select count(*)
+from funding_participation;
+
+
+select F.FUNDING_NO,
+        F.TITLE,
+        F.CATEGORY_CODE,
+                            (select count(*)
+                            from funding_participation
+                            where F.funding_no = 99) cioo
+    from funding F 
+    join funding_reward R 
+    on F.funding_no = R.funding_no
+    join attachment A
+    on F.funding_no = A.funding_no
+    join member M
+    on F.writer_no = M.member_no
+where f.funding_no =99;
+
+
+select count(*) count
+from funding_participation
+where funding_no = 99;
+
+select *
+from funding F 
+    join funding_reward R 
+    on F.funding_no = R.funding_no
+    join attachment A
+    on F.funding_no = A.funding_no
+    join member M
+    on F.writer_no = M.member_no
+where F.funding_no = 99;
 -----------------------
 select * from tab;
 

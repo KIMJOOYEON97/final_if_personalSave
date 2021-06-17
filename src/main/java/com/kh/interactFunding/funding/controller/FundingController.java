@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -102,7 +103,7 @@ public class FundingController {
 	//최종제출되었을때 알람 전달을 위해서 만듬
 	@GetMapping("/fundingStart1/{msg}")
 	@ResponseBody
-	public ModelAndView fundingStart1(@PathVariable String msg, ModelAndView mav, HttpServletRequest request) {
+	public ModelAndView fundingStart1(@PathVariable(name="msg") String msg, ModelAndView mav, HttpServletRequest request) {
 		log.debug("fundingStart1");
 		RedirectView view = new RedirectView(request.getContextPath()+"/funding/fundingStart1");
 		//url관련한 것을 자동으로 붙여주는 속성
@@ -125,7 +126,7 @@ public class FundingController {
 	
 	//기존에 있는 것을 이어서 시작할 경우
 	@GetMapping("/existFunding")
-	public String fundingStart2(@RequestParam String fundingNo, Model model, @SessionAttribute Member loginMember) {
+	public String fundingStart2(@RequestParam(value="fundingNo") String fundingNo, Model model, @SessionAttribute Member loginMember) {
 		try {
 			log.debug("fundingNo={}",fundingNo);
 			FundingExt funding = fundingService.loadFunding(fundingNo);
@@ -172,22 +173,45 @@ public class FundingController {
 	public void fundingStart5() {
 		log.debug("fundingStart5");
 	}
+
 	@GetMapping("/ready1Funding")
-	public void ready1Funding() {
+	public void ready1Funding(@SessionAttribute FundingExt funding, RedirectAttributes redirectAttr) {
+		
+		String fundingNo = String.valueOf(funding.getFundingNo());
+		
+		FundingExt fundingR = fundingService.selectCheckFunding(fundingNo);
+		List<Reward> rewardList = fundingService.loadReward(fundingNo);
 		
 		//요금제 작성여부 확인
+		fundingR.getRatePlanCode();
 		
 		//기본정보 작성여부 확인
+		fundingR.getCategoryCode();
+		fundingR.getTitle();
+		fundingR.getDDay();
+		fundingR.getAttachList();
 		
 		//스토리 작성여부 확인
+		fundingR.getContent();
+		fundingR.getEarlyContent();
+		fundingR.getStartDate();
 		
 		//리워드 작성여부 확인
+		for(Reward reward:rewardList) {
+			reward.getRewardNo();
+			reward.getTitle();
+			reward.getContent();
+			reward.getPrice();
+			reward.getLimitAmount();
+			reward.getShippingPrice();
+			reward.getShippingDate();
+		}
 		
 		log.debug("ready1Funding");
 	}
 	@GetMapping("/ready1Funding/{msg}")
 	@ResponseBody
-	public ModelAndView ready1Funding(@PathVariable String msg, ModelAndView mav, HttpServletRequest request) {
+	public ModelAndView ready1Funding(@PathVariable(name="msg") String msg, ModelAndView mav, HttpServletRequest request) {
 		log.debug("ready1Funding");
 		RedirectView view = new RedirectView(request.getContextPath()+"/funding/ready1Funding");
 		//url관련한 것을 자동으로 붙여주는 속성
@@ -210,7 +234,7 @@ public class FundingController {
 	}
 	@PutMapping("/saveCharge/{no}/{charge}")
 	@ResponseBody
-	public Map<String, Object> saveCharge(@PathVariable String no ,@PathVariable String charge) {
+	public Map<String, Object> saveCharge(@PathVariable(name="no") String no ,@PathVariable(name="charge") String charge) {
 		try {
 			Map<String, Object> param = new HashMap<String, Object>();
 			param.put("no",no);
@@ -292,34 +316,45 @@ public class FundingController {
 			}
 			return "redirect:/funding/ready1Funding";
 	}
-	
 	@GetMapping("/ready4Story")
-	public void ready5Funding(@SessionAttribute FundingExt funding, Model model) {
+	public void ready4Story() {
+		log.debug("ready4Story");
+	}
+	
+	@GetMapping("/ready4StoryLoad")
+	@ResponseBody
+	public Map<String, Object> ready4Story(@SessionAttribute FundingExt funding) {
 		try {
+			log.debug("funding={}",funding);
 			String fundingNo = String.valueOf(funding.getFundingNo());
 			FundingExt fundingR = fundingService.loadFunding(fundingNo);
-			model.addAttribute("funding",fundingR);
-			log.debug("ready4Story");
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("funding",fundingR);
+			log.debug("ready4StoryLoad");
+			return map;
 		} catch (Exception e) {
 			log.error("story 불러오기 에러",e);
 			throw e;
 		}
 	}
+	
 	@PostMapping("/saveStory")
 	public String saveStory(FundingExt funding, RedirectAttributes redirectAttr){
 		try {
 			log.debug("funding={}",funding);
 
 			String earlyContent = funding.getEarlyContent();
-			Date startDay =funding.getDDay();
+			Date startDayCompare =funding.getDDay();
+			
+			Date nowTime = new Date();
 			
 			//얼리버드 선택안했을 경우 값이 null로 들어가게
-			if(startDay == null) {
+			if(startDayCompare == nowTime) {
 				earlyContent = null;
 				funding.setEarlyContent(earlyContent);
 			}
 						
-			log.debug("earlyContent ={}, startDay={}",earlyContent,startDay);
+			log.debug("earlyContent ={}, startDay={}",earlyContent,funding.getDDay());
 
 			int result = fundingService.saveStory(funding);
 			
@@ -333,20 +368,40 @@ public class FundingController {
 		
 		return "redirect:/funding/ready1Funding";
 	}
+	
+	@GetMapping("/selectOneReward/{rewardNo}")
+	@ResponseBody
+	public Map<String, Object> selectOneReward(@PathVariable(name="rewardNo") String rewardNo) {
+		try {
+			log.debug("selectOneReward");
+			Reward chReward = fundingService.selectOneReward(rewardNo);
+			Map<String,Object> map = new HashMap<String, Object>();
+			map.put("chReward", chReward);
+			log.debug("chReward={}",chReward);
+			return map;
+		} catch (Exception e) {
+			log.error("reward 하나 불러오기 에러",e);
+			throw e;
+		}
+		
+	}
+	
+	
 	@GetMapping("/ready5Reward")
-	public void ready6Funding(@SessionAttribute FundingExt funding, Model model) {
+	public void ready5Reward(@SessionAttribute FundingExt funding, Model model) {
 		try {
 			String fundingNo = String.valueOf(funding.getFundingNo());
 			List<Reward> rewardList = fundingService.loadReward(fundingNo);
 			model.addAttribute("rewardList", rewardList);
-			log.debug("ready4Story");
+			log.debug("ready5Reward");
 		} catch (Exception e) {
 			log.error("reward 불러오기 에러",e);
 			throw e;
 		}
 	}
+	
 	@PostMapping("/insertReward")
-	public String insertReward(Reward reward) {
+	public String  insertReward(Reward reward, RedirectAttributes redirectAttr) {
 		log.debug("reward={}",reward);
 		try {
 			
@@ -360,7 +415,7 @@ public class FundingController {
 	}
 	
 	@PostMapping("/updateReward")
-	public String updateReward(Reward reward) {
+	public String updateReward(Reward reward, RedirectAttributes redirectAttr, Model model) {
 		log.debug("reward={}",reward);
 		try {
 			
@@ -374,7 +429,7 @@ public class FundingController {
 	}
 	
 	@PostMapping("/deleteReward")
-	public String deleteReward(Reward reward, RedirectAttributes redirectAttr) {
+	public String deleteReward(Reward reward, RedirectAttributes redirectAttr, Model model) {
 		log.debug("reward={}",reward.getRewardNo());
 		try {
 			
@@ -383,6 +438,9 @@ public class FundingController {
 			int result = fundingService.deleteReward(rewardNo);
 			
 			redirectAttr.addFlashAttribute("msg","리워드를 삭제하였습니다.");
+			
+			model.addAttribute("reward",reward);
+			
 			return "redirect:/funding/ready5Reward";
 		} catch (Exception e) {
 			log.error("reward 삭제 에러",e);
@@ -392,7 +450,7 @@ public class FundingController {
 	
 	@PutMapping("/finalSubmit")
 	@ResponseBody
-	public Map<String, Object> finalSubmit(Funding funding){
+	public Map<String, Object> finalSubmit(@SessionAttribute FundingExt funding){
 		try {
 				log.debug("funding={}",funding);
 				//int result =  fundingService.finalSubmit(funding);
@@ -408,7 +466,7 @@ public class FundingController {
 	//펀딩 삭제하기
 	@PostMapping("/deleteFunding")
 	public String deleteFunding(
-			@RequestParam String fundingNo,
+			@RequestParam(value="fundingNo") String fundingNo,
 			RedirectAttributes redirectAttr,
 			HttpServletRequest request,
 			Model model){
@@ -438,7 +496,7 @@ public class FundingController {
 	
 	@GetMapping("/checkSMSPhone")
 	@ResponseBody
-	public Map<String, Object> checkSMSPhone(@RequestParam String phoneNumber) {
+	public Map<String, Object> checkSMSPhone(@RequestParam(value="phoneNumber") String phoneNumber) {
 	    String api_key = "NCSU1PW70UL1PLML";
 	    String api_secret = "BGPK3YEIOVUDDPRLXYM9NWSXIWP5FKZK";
         

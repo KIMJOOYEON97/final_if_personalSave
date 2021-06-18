@@ -53,17 +53,16 @@ window.setTimeout(function() {
 			<form  action="${pageContext.request.contextPath}/funding/existFunding" id="existFundingFrm">
 	           	<p class="card-text">${funding.fundingNo}</p>
 	           	<input id="fundingNo" name="fundingNo" type="hidden" value="${funding.fundingNo}"/>
-				<!-- 메인이미지 넣을 것  -->
-				  <c:forEach items="${funding.attachList}" var="attach" varStatus="vs">
-					  <c:if test="${vs.count == 1}">
-					  <c:if test="${attach.originalFilename == null}">
-					  	<img class="card-img-top" src="${pageContext.request.contextPath}/resources/image/image-not-found.jpg" alt="대표이미지 등록 필요"> 
-					  </c:if>
-					  <c:if test="${attach.originalFilename != null}">
-					  	<img class="card-img-top" src="${pageContext.request.contextPath}/resources/upload/${attach.renamedFilename}"  alt="대표이미지 등록 필요"> 
-					  </c:if>
-					  </c:if>
-				  </c:forEach>
+				<!-- 메인이미지 넣을 것  --> 
+				  <c:if test="${funding.attachment == null}">
+				  	<img class="card-img-top" src="${pageContext.request.contextPath}/resources/image/image-not-found.jpg" alt="대표이미지 등록 필요"> 
+				  </c:if>
+				  <c:if test="${funding.attachment != null}">
+					  <c:set value="${funding.attachment}" var="attach" scope="page" />
+					  	<img class="card-img-top" src="${pageContext.request.contextPath}/resources/upload/${attach.renamedFilename}"  alt="파일을 찾을 수 없습니다."> 
+					  
+				  </c:if>
+				  
 				  <div class="card-body">
 				    <h5 class="card-title">${funding.title == null? '제목 미지정':funding.title}</h5>
 				<!-- 작성자 불러오기  -->
@@ -86,16 +85,24 @@ window.setTimeout(function() {
         	<c:if test="${not empty statusYList}">
 			<c:forEach var="funding" items="${statusYList}">
 			<div class="card d-inline-flex m-2" style="width: 18rem;">
-			<input id="fundingNo" type="hidden" value="${funding.fundingNo}"/>
-			<!-- 메인이미지 넣을 것  -->
-			  <img class="card-img-top" src="" alt="대표이미지 등록 필요">
-			  <div class="card-body">
-			    <h5 class="card-title">${funding.title}</h5>
-			    <h5 class="card-title">${loginMember.name}</h5>
-			<!-- 작성자 불러오기  -->
-			    <p class="card-text">${funding.name}</p>
-			    <button class="btn btn-outline-info " type="button" id="goStudio" onclick="goStudio(this)">스튜디오 바로가기 </button>
-			  </div>
+			<form  action="${pageContext.request.contextPath}/funding/existFunding" id="existFundingFrm">
+				<p class="card-text">${funding.fundingNo}</p>
+				<input name="fundingNo" type="hidden" value="${funding.fundingNo}"/>
+				<!-- 메인이미지 넣을 것  --> 
+				  <c:if test="${funding.attachment == null}">
+				  	<img class="card-img-top" src="${pageContext.request.contextPath}/resources/image/image-not-found.jpg" alt="대표이미지 등록 필요"> 
+				  </c:if>
+				  <c:if test="${funding.attachment != null}">
+				  	<img class="card-img-top" src="${pageContext.request.contextPath}/resources/upload/${attach.renamedFilename}"  alt="파일을 찾을 수 없습니다."> 
+				  </c:if>
+				  
+				  <div class="card-body">
+				    <h5 class="card-title">${funding.title == null? '제목 미지정':funding.title}</h5>
+				<!-- 작성자 불러오기  -->
+				    <p class="card-text">${loginMember.name}</p>
+				    <button class="btn btn-outline-info " type="submit" id="goStudio">스튜디오 바로가기 </button>
+				  </div>
+			</form>
 			</div>
             </c:forEach>
             </c:if>

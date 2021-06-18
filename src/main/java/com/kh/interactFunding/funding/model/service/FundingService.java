@@ -13,45 +13,59 @@ import com.kh.interactFunding.member.model.vo.Member;
 public interface FundingService {
 	
 	//김윤수
+	List<Integer> selectMyLikeNoList(int memberNo);
+	Funding selectOneFundingKYS(int no);
 	
 	//김경태
 	
 	//김주연
-	List<FundingExt> statusYList(Member loginMember);
-	List<FundingExt> statusNList(Member loginMember);
+	List<FundingExt> statusYList(int memberNo);
+	List<FundingExt> statusNList(int memberNo);
 	int ready1FundingInsertNo(Funding funding);
-	FundingExt selectCheckFunding(String fundingNo);
+	FundingExt selectCheckFunding(int fundingNo);
 	int saveCharge(Map<String, Object> param);
 	int saveBasicInfo(FundingExt funding);
 	int insertAttachment(Attachment attach);
-	int saveStory(Funding funding);
-	List<Reward> loadReward(String fundingNo);
-	Reward selectOneReward(String rewardNo);
+	int updateAttachment(int fundingNo);
+	int saveStory(FundingExt funding);
+	List<Reward> loadReward(int fundingNo);
+	Reward selectOneReward(int rewardNo);
 	int insertReward(Reward reward);
 	int updateReward(Reward reward);
 	int deleteReward(int rewardNo);
-	int finalSubmit(Funding funding);
-	int deleteFunding(String fundingNo);
-	FundingExt loadFunding(String fundingNo);
+	int finalSubmit(int fundingNo);
+	int finalNSubmit(int fundingNo);
+	int deleteFunding(int fundingNo);
+	FundingExt loadFunding(int fundingNo);
+	int savePhone(Map<String, Object> map);
 	
 	//박요한
-	List<Funding> news(Map<String, Object> param);
-	List<Funding> community(Map<String, Object> param);
-	List<Funding> supporter(Map<String, Object> param);
+	List<Funding> fundingNews(int funding_no);
+	
 	
 	//배기원
 	public List<Funding> indexfundingList();
-	List<Funding> indexEarlyList();
-	int indexTotalContents();
 	public List<Funding> indexfundinglike();
+	//List<Funding> indexEarlyList();
+	List<Funding> indexviewlist();
+	List<Funding> indexlikelist();
+	List<Funding> indexfundingRefresh();
+	int indexTotalContents();
+	
+		
 	//이승우
 	public List<Funding> fundingList(Map<String, Object> map);
-	public List<Map<String, String>> selectCategoryList();
-
+	public int selectFundingListTotalContents(Map<String, Object> map);
+	public List<Funding> earlyList();
 
 	
 	//천호현
-	public Funding selectOneFunding(int funding_no);
-	public int selectOneFunding2(int funding_no);
+	public Funding selectOneFunding(int fundingNo);
+	public int selectOneFunding2(int fundinNo);
+	Map<String, Object> likeCheck(Map<String, Object> map);
+	int insertLike(Map<String, Object> map);
+	int updateLike(Map<String, Object> result);
+	int likeCount(Map<String, Object> map);
+	int likeStatusCheck(int membeNo);
 
 }

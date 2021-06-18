@@ -23,7 +23,7 @@
         	<h2><strong>메이커 정보</strong></h2>
             <p>안녕하세요 메이커님, 마지막으로 프로젝트 저장하기 전에 전화번호 인증을 해주세요</p>
             
-            <input type="hidden" id="smsCheck" val="" />
+            <input type="hidden" id="smsCheck"/>
 			<!--휴대전화 인증-->
             <p class="font-weight-bold">관리자 휴대전화</p>
             <!-- 인증을 완료했을 경우 -->
@@ -35,7 +35,7 @@
                 </div>
             </div>
             
-            <p id="checkedMember" class="font-weight-normal">인증을 완료한 회원입니다</p>
+            <p id="checkedMember" class="font-weight-normal" style="display:none">인증을 완료한 회원입니다</p>
             
             
             <!-- 인증하기를 클릭해서 인증할 경우 -->
@@ -73,22 +73,25 @@
 
 //최종 제출 status Y로 바꾸기
 function finalSubmit(){
-
-	if(confirm("최종 제출하면 펀딩 삭제가 불가합니다. 최중 제출하겠습니까?")){
-
-	
-		$.ajax({
-			url:`${pageContext.request.contextPath}/funding/finalSubmit`,
-			method: "put",
-			success(data){
-				console.log(data);
-				const {msg} = data;
-				window.location.href = `${pageContext.request.contextPath}/funding/fundingStart1/\${msg}`;
-			},
-			error: console.log
-			});
-
-	}
+	swal({
+		  title: "최종제출하면 펀딩 삭제가 불가합니다. 최종제출하겠습니까?",
+		  text: "펀딩수정은 가능합니다.",
+		  icon: "warning",
+		  buttons: true,
+		  dangerMode: true,
+		})
+		.then(function(){
+			$.ajax({
+				url:`${pageContext.request.contextPath}/funding/finalSubmit`,
+				method: "PUT",
+				success(data){
+					console.log(data);
+					const {msg} = data;
+					window.location.href = `${pageContext.request.contextPath}/funding/fundingStart1/\${msg}`;
+				},
+				error: console.log
+				});
+	});
 }
 
 
@@ -105,7 +108,7 @@ function smsSend(btn){
 		return;
 	}
 	
-    swal('인증번호 발송 완료!');
+    swal('인증번호 발송 완료!','','success');
    
 
      $.ajax({
@@ -115,30 +118,38 @@ function smsSend(btn){
             "phoneNumber" : phoneNumber
         },
         success: function(data){
+           	$("#smsCheck").val("OK");
             const {numStr} = data;
             $('#checkBtn').click(function(){
+                console.log("문자인증 확인중");
+                console.log(numStr);
                 if(numStr ==$('#inputCertifiedNumber').val()){
-                    swal(
-                        '인증성공!',
-                        '휴대폰 인증이 정상적으로 완료되었습니다.',
-                        'success'
-                    )
-                    $('#smsCheck').val("OK");
-                    $('#checkedMember').show();
-                    $('#certifiedArea').hide();
-                }else{
-                    swal(
-                        '인증오류',
-                        '인증번호가 올바르지 않습니다!',
-                        'error'
-                      
-                    )
-                    $('#checkedMember').hide();
-                }
-            })
+                	swal({
+              		  title: "인증성공!",
+              		  text: "휴대폰 인증이 정상적으로 완료되었습니다.",
+              		  icon: "success",
+              		  buttons: true,
+              		})
+              		.then(function(){
 
-        }
-    })
+              			$('#checkedMember').show();
+                        $('#certifiedArea').hide();
+                  		
+              			$.ajax({
+            				url:`${pageContext.request.contextPath}/funding/savePhone`,
+            				data:{phone : phone},
+            				method: "PUT",
+            				success(data){
+            					alert("성공");
+            				},
+            				error: console.log
+            				});
+              			});
+                	}       
+
+        },
+        error: console.log
+    });
 };
 
 

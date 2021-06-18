@@ -103,7 +103,7 @@
             <div class="modal-dialog" role="document" >
             <div class="modal-content">
             <form id="rewardInsertFrm" name="rewardInsertFrm" action="${pageContext.request.contextPath}/funding/insertReward" method="POST"
-            	onsubmit="return rewardValidate(this);">          
+            	onsubmit="return rewardInsertValidate();">          
                 <input type="hidden" name="fundingNo" value="${funding.fundingNo}">
                 <div class="modal-header">
                     <p class="font-weight-bold">리워드 추가</p>
@@ -230,7 +230,7 @@
             <div class="modal-dialog" role="document" >
             <div class="modal-content">
             <form id="rewardUpdateFrm" name="rewardUpdateFrm" action="${pageContext.request.contextPath}/funding/updateReward" method="POST"
-            onsubmit="return rewardValidate();">
+            onsubmit="return rewardUpdateValidate();">
                 <%--  <c:forEach items="${rewardList}" var="reward"> --%>
                  <input type="hidden" name="hiddenRewardInfo"/>
                  <input type="hidden" name="fundingNo"/>
@@ -404,12 +404,19 @@
 
 
         <br><br>
-        <button type="button" class="btn btn-primary btn-lg" style="width: 200px;">저장하기</button>
+        <button type="button" class="btn btn-primary btn-lg" style="width: 200px;" onclick="rewardSave()">저장하기</button>
         
         
     </div>
 </section> 
 <script>
+
+	function rewardSave(){
+
+		const msg = "리워드를 저장했습니다.";
+		location.href = `${pageContext.request.contextPath}/funding/ready1Funding/\${msg}`;
+		
+	}
 
 	var fundingNo;
 	var price;
@@ -497,24 +504,79 @@
 	
 
     //유효성 검사
-    function rewardValidate(form){
-    	console.log(form);
-        
-    	const $frm =  $('#rewardInsertFrm');
+    function rewardInsertValidate(){
+
+    	var $frm =  $('#rewardInsertFrm');
+       
     	console.log($frm);
-    /* 	const $fundingNo = $frm.find("[name=fundingNo]").val();
-		const $price = $frm.find("[name=price]").val();
-		const $title = $frm.find("[name=title]").val();
-		const $content = $frm.find("[name=content]").val();
-		const $shippingPrice = $frm.find("[name=shippingPrice]").val();
-		const $limitAmount = $frm.find("[name=limitAmount]").val();
-		const $shippingDate = $frm.find("[name=shippingDate]").val();
-    	if(/^(.|\n)+$/.test($content.val()) == false){
-    		alert("내용을 입력하세요");
+    	const $price = $frm.find("[name=price]").val();
+    	const $title = $frm.find("[name=title]").val();
+    	const $content = $frm.find("[name=content]").val();
+    	const $shippingPrice = $frm.find("[name=shippingPrice]").val();
+    	const $limitAmount = $frm.find("[name=limitAmount]").val();
+    	const $shippingDate = $frm.find("[name=shippingDate]").val();
+    	console.log($content);
+
+    	if(/^(.|\n)+$/.test($price) == false){
+    		swal("리워드 금액을 입력하세요","","warning")
     		return false;
     	}
+    	if(/^(.|\n)+$/.test($title) == false){
+    		swal("리워드명을 입력하세요","","warning")
+    		return false;
+    	}
+    	if(/^(.|\n)+$/.test($content) == false){
+    		swal("상세설명을 입력하세요","","warning")
+    		return false;
+    	}
+    	if(/^(.|\n)+$/.test($shippingPrice) == false){
+    		swal("배송비를 입력하세요","","warning")
+    		return false;
+    	}
+    	if(/^(.|\n)+$/.test($limitAmount) == false){
+    		swal("제한수량을 입력하세요","","warning")
+    		return false;
+    	}
+   
+
     	return true;
-    	return false; */
+    }
+    
+    function rewardUpdateValidate(){
+
+    	var $frm =  $('#rewardUpdateFrm');
+     
+    	console.log($frm);
+    	const $price = $frm.find("[name=price]").val();
+    	const $title = $frm.find("[name=title]").val();
+    	const $content = $frm.find("[name=content]").val();
+    	const $shippingPrice = $frm.find("[name=shippingPrice]").val();
+    	const $limitAmount = $frm.find("[name=limitAmount]").val();
+    	//배송시작일을 default값이 있으므로 필요가 없음
+    	console.log($content);
+
+    	if(/^(.|\n)+$/.test($price) == false){
+    		swal("리워드 금액을 입력하세요","","warning")
+    		return false;
+    	}
+    	if(/^(.|\n)+$/.test($title) == false){
+    		swal("리워드명을 입력하세요","","warning")
+    		return false;
+    	}
+    	if(/^(.|\n)+$/.test($content) == false){
+    		swal("상세설명을 입력하세요","","warning")
+    		return false;
+    	}
+    	if(/^(.|\n)+$/.test($shippingPrice) == false){
+    		swal("배송비를 입력하세요","","warning")
+    		return false;
+    	}
+    	if(/^(.|\n)+$/.test($limitAmount) == false){
+    		swal("제한수량을 입력하세요","","warning")
+    		return false;
+    	}
+    
+    	return true;
     }
 
     

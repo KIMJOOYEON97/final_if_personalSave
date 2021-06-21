@@ -9,7 +9,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Start1 | IF Maker Studio</title>
+    <title>Submit | SMS certification</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -29,9 +29,9 @@
             <!-- 인증을 완료했을 경우 -->
             <div class="input-group mb-3">
                 <!-- 회원정보를 받아와서 value에 휴대전화 번호를 넣을 것 -->
-                <input type="text" name="phone" id="inputPhoneNumber" class="form-control" aria-label="Recipient's username" aria-describedby="button-addon2" placeholder="받는 사람 번호">
+                <input type="text" name="phone" id="inputphone" class="form-control" aria-label="Recipient's username" aria-describedby="button-addon2" placeholder="받는 사람 번호">
                 <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="button" id="sendPhoneNumber" onclick="smsSend(this)">전송</button>
+                    <button class="btn btn-outline-secondary" type="button" id="sendphone" onclick="smsSend(this)">전송</button>
                 </div>
             </div>
             
@@ -62,9 +62,9 @@
                         <input type="checkbox"  aria-label="Checkbox for following text input" onchange="mustchk()">
                     </div>
                 </div>
-                <label class="form-control" aria-label="Text input with checkbox" >(선택) 와디즈 메이커를 위한 유용한 뉴스레터 받기</label>
+                <label class="form-control" aria-label="Text input with checkbox" >(선택) 이프 메이커를 위한 유용한 뉴스레터 받기</label>
             </div>
-           <button id="finalsubmit" class="btn btn-primary btn-lg" role="button" style="width: 200px;"  onclick="finalSubmit()" disabled>최종 제출하기</button>
+           <button id="finalsubmit" class="btn btn-primary btn-lg" role="button" style="width: 200px;"  onclick="finalSubmit()" disabled >최종 제출하기</button>
         </div>
     <!-- </form> -->
     </section>
@@ -98,58 +98,70 @@ function finalSubmit(){
 
 function smsSend(btn){
 	$('#checkedMember').hide();
-	let phoneNumber = $('#inputPhoneNumber').val();
+	let phone = $('#inputphone').val();
 
+	
 	//전화번호 유효성 검사
 	var regExp = /^(01[016789]{1}|02|0[3-9]{1}[0-9]{1})-?[0-9]{3,4}-?[0-9]{4}$/;
 
-	if(!regExp.test(phoneNumber)){
+	if(!regExp.test(phone)){
 		swal("전화번호 형식이 유효하지 않습니다","다시 확인해 주세요","error");
 		return;
 	}
 	
     swal('인증번호 발송 완료!','','success');
-   
+
+	console.log(phone);
+    
+   /*  $.ajax({
+		url:"${pageContext.request.contextPath}/funding/savePhone",
+		method: "PUT",
+		data: {phone : phone},
+		success(data){
+		},
+		error: console.log
+	});	    */
 
      $.ajax({
         type: "GET",
         url: "${pageContext.request.contextPath}/funding/checkSMSPhone",
         data: {
-            "phoneNumber" : phoneNumber
+            "phone" : phone
         },
         success: function(data){
            	$("#smsCheck").val("OK");
             const {numStr} = data;
             $('#checkBtn').click(function(){
-                console.log("문자인증 확인중");
-                console.log(numStr);
+                //console.log("문자인증 확인중");
+                //console.log(numStr);
                 if(numStr ==$('#inputCertifiedNumber').val()){
-                	swal({
-              		  title: "인증성공!",
-              		  text: "휴대폰 인증이 정상적으로 완료되었습니다.",
-              		  icon: "success",
-              		  buttons: true,
-              		})
-              		.then(function(){
+               		swal( '인증성공!',
+                          '휴대폰 인증이 정상적으로 완료되었습니다.',
+                          'success')
+            		$('#checkedMember').show();
+                    $('#certifiedArea').hide();
 
-              			$('#checkedMember').show();
-                        $('#certifiedArea').hide();
-                  		
-              			$.ajax({
-            				url:`${pageContext.request.contextPath}/funding/savePhone`,
-            				data:{phone : phone},
-            				method: "PUT",
-            				success(data){
-            					alert("성공");
-            				},
-            				error: console.log
-            				});
-              			});
-                	}       
+                	$.ajax({
+        				url:`${pageContext.request.contextPath}/funding/savePhone`,
+        				method: "PUT",
+        				data: {phone : phone},
+        				success(data){
+        				},
+        				error: console.log
+        			});	
+              		
+          
+                }else{
+                    swal('인증오류',
+                         '인증번호가 올바르지 않습니다.',
+                         'error'
+                         )
+                }       
 
+        	})
         },
         error: console.log
-    });
+    });  
 };
 
 

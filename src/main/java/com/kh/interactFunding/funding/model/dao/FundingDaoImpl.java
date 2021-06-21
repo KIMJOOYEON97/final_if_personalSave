@@ -37,6 +37,14 @@ public class FundingDaoImpl implements FundingDao{
 	public Attachment selectOneAttach(int no) {
 		return session.selectOne("funding.selectOneAttach",no);
 	}
+	@Override
+	public int selectMyPartiCnt(int memberNo) {
+		return session.selectOne("funding.selectMyPartiCnt",memberNo);
+	}
+	@Override
+	public int selectMyCreateCnt(int memberNo) {
+		return session.selectOne("funding.selectMyCreateCnt",memberNo);
+	}
 	
 	//김경태
 	
@@ -48,6 +56,14 @@ public class FundingDaoImpl implements FundingDao{
 	@Override
 	public List<FundingExt> statusNList(int memberNo) {
 		return session.selectList("funding.statusNList",memberNo);
+	}
+	@Override
+	public List<FundingExt> nowList(int memberNo) {
+		return session.selectList("funding.nowList",memberNo);
+	}
+	@Override
+	public List<FundingExt> finishList(int memberNo) {
+		return session.selectList("funding.finishList",memberNo);
 	}
 	@Override
 	public FundingExt loadFunding(int fundingNo) {
@@ -116,10 +132,7 @@ public class FundingDaoImpl implements FundingDao{
 	public int deleteFunding(int fundingNo) {
 		return session.delete("funding.deleteFunding",fundingNo);
 	}
-	@Override
-	public int savePhone(Map<String, Object> map) {
-		return session.update("funding.savePhone",map);
-	}
+
 	
 	//박요한
 	@Override
@@ -180,13 +193,12 @@ public class FundingDaoImpl implements FundingDao{
 	//천호현
 
 	@Override
-	public Funding selectOneFunding(int fundingNo) {
+	public FundingExt selectOneFunding(int fundingNo) {
 		return session.selectOne("funding.selectOneFunding", fundingNo);
 	}
-	
 	@Override
-	public int selectOneFunding2(int fundingNo) {
-		return session.selectOne("funding.selectOneFunding2", fundingNo);
+	public int fundingParticipationCount(int fundingNo) {
+		return session.selectOne("funding.fundingParticipationCount", fundingNo);
 	}
 	@Override
 	public Map<String, Object> likeCheck(Map<String, Object> map) {
@@ -208,5 +220,11 @@ public class FundingDaoImpl implements FundingDao{
 	public int likeStatusCheck(int memberNo) {
 		return session.selectOne("funding.likeStatusCheck", memberNo);
 	}
+	@Override
+	public List<Reward> selectRewardList(int fundingNo) {
+		return session.selectList("funding.selectRewardList", fundingNo);
+	}
+
+	
 	
 }

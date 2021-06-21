@@ -21,6 +21,12 @@
     height: 80vh;
     overflow-y: auto;
 }
+
+div.leftB{
+	border: 1px solid;
+	border-left: 20px solid blue;
+}
+
 </style>
 
 
@@ -106,10 +112,8 @@
                 </p>
             </div>
             <br>
-            
-            ${writeMap}
-            
-            <div class="border rounded p-3 ">
+    
+            <div class="leftB rounded p-3 ">
                 <br>
                 <p class="h3 d-inline"> 요금제 선택 </p> &nbsp;&nbsp; 
                 <!-- 작성 완료하면 작성 완료로 변경 -->
@@ -190,47 +194,101 @@
                 <br>
             </div>
             <br>
-			${loginMember}
+			
 			<!-- 최종 제출했을 시 펀딩 삭제가 불가능하다. -->
 			<!-- 최종 제출이 안되었을 때 전화번호 인증안했을 때 -->
-			<c:if test="${funding.status != true && logindMember.phone == null}">
-			<button id="checkSMSPhone" class="btn btn-primary btn-lg" role="button" style="width: 200px;" onclick="location.href='${pageContext.request.contextPath}/funding/checkSMS';">제출하기</button>
-			<br />
-			<form id="fundingDeleteFrm" method="POST" action="${pageContext.request.contextPath}/funding/deleteFunding">
-				<input type="hidden" name="fundingNo">
-				<button type="button" id="deleteFunding" class="btn btn-primary btn-lg" style="width: 200px;" onclick="deletefunding()">펀딩 삭제하기</button>
-			</form>
+			<c:if test="${funding.status != true && loginMember.phone == null}">
+				<div class="d-flex flex-row  pb-5">
+					<button id="checkSMSPhone" class="btn btn-primary btn-lg " role="button" style="width: 200px;" onclick="location.href='${pageContext.request.contextPath}/funding/checkSMS';" >제출하기</button>
+					<br />
+				</div>
+				<form id="fundingDeleteFrm" method="POST" action="${pageContext.request.contextPath}/funding/deleteFunding">
+					<input type="hidden" name="fundingNo">
+					<button type="button" id="deleteFunding" class="btn btn-outline-danger btn-lg " style="width: 200px;" onclick="deletefunding()">펀딩 삭제하기</button>
+				</form>
 			</c:if>
 			
 			<!-- 최종 제출이 안되었을 때 전화번호는 인증한 상태  -->
-			<c:if test="${funding.status != true && logindMember.phone != null}">
-			<button id="checkSMSPhone" class="btn btn-primary btn-lg" role="button" style="width: 200px;" onclick="finalYSubmit()">제출하기</button>
-			<br />
-			<form id="fundingDeleteFrm" method="POST" action="${pageContext.request.contextPath}/funding/deleteFunding">
-				<input type="hidden" name="fundingNo">
-				<button type="button" id="deleteFunding" class="btn btn-primary btn-lg" style="width: 200px;" onclick="deletefunding()">펀딩 삭제하기</button>
-			</form>
+			<c:if test="${funding.status != true && loginMember.phone != null}">
+				<div class="d-flex flex-row  pb-4">
+					<button name="disabledFT" id="checkSMSPhone" class="btn btn-primary btn-lg mr-4 " role="button" style="width: 200px;" onclick="finalSubmit()" >제출하기</button>
+					<button name="disabledFT" id="REcheckSMSPhone" class="btn btn-primary btn-lg" role="button" style="width: 200px;" onclick="location.href='${pageContext.request.contextPath}/funding/checkSMS';" >번호인증 다시하기</button>
+					<p class="text-muted">(사용자 전화번호가 변경되고 제출됩니다.)</p>
+					<br />
+				</div>
+					<form id="fundingDeleteFrm" method="POST" action="${pageContext.request.contextPath}/funding/deleteFunding">
+						<input type="hidden" name="fundingNo">
+						<button type="button" id="deleteFunding" class="btn btn-outline-danger btn-lg " style="width: 200px;" onclick="deletefunding()">펀딩 삭제하기</button>
+					</form>
 			</c:if>
 				
 			<!-- 최종 제출이 되었을 때 -->
 			<c:if test="${funding.status == true}">
-				<button id="finalYSubmit" class="btn btn-primary btn-lg" role="button" style="width: 200px;" onclick="finalYSubmit()">수정하기</button>
-			</c:if>
-			
-			<!-- 최종 제출이 되었는데 수정해서 미완성일때  -->
-			<c:if test="${funding.status == true}">
-				<button id="finalNSubmit" class="btn btn-primary btn-lg" role="button" style="width: 200px;" onclick="finalNSubmit()">수정하기</button>
+				<div class="d-flex flex-row align-items-center">
+					<c:if test="${writeMap.ratePlanCode == 'OK' && writeMap.basicInfo == 'OK'&& writeMap.story == 'OK' && writeMap.reward == 'OK'}">
+						<button name="disabledFT" id="finalYSubmit" class="btn btn-primary btn-lg mr-4" role="button" style="width: 200px;" onclick="finalYSubmit()" >수정하기</button>			
+						<button name="disabledFT" id="REcheckSMSPhone" class="btn btn-primary btn-lg" role="button" style="width: 200px;" onclick="location.href='${pageContext.request.contextPath}/funding/checkSMS';" >번호인증 다시하기</button>	
+						<p class="text-muted">(사용자 전화번호가 변경되고 제출됩니다.)</p>
+					</c:if>
+				<!-- 최종 제출이 되었는데 수정해서 미완성일때  -->
+					<c:if test="${writeMap.ratePlanCode != 'OK' || writeMap.basicInfo != 'OK' || writeMap.story != 'OK' || writeMap.reward != 'OK'}">
+						<button id="finalNSubmit" class="btn btn-primary btn-lg " role="button" style="width: 200px;" onclick="finalNSubmit()">수정하기</button>
+					</c:if>
+				</div>
 			</c:if>
 			
         </div>
+        
+        <input type="hidden" id="ratePlanCode" value="${writeMap.ratePlanCode}" />
+        <input type="hidden" id="basicInfo" value="${writeMap.basicInfo}"/>
+        <input type="hidden" id="story"  value="${writeMap.story}"/>
+        <input type="hidden" id="reward" value="${writeMap.reward}"/>
+        
         </section>
 <script>
+
+	$(document).ready(function(){
+		const ratePlanCode = $("#ratePlanCode").val();
+		const basicInfo = $("#basicInfo").val();
+		const story = $("#story").val();
+		const reward = $("#reward").val();
+
+		if(ratePlanCode == "OK" && basicInfo == "OK" && story == "OK"  && reward == "OK"){
+			$("[name=disabledFT]").attr("disabled",false);
+		}else{
+			$("[name=disabledFT]").attr("disabled",true);
+		}
+		
+	});
+
+	function finalSubmit(){
+		swal({
+			  title: "최종제출하면 펀딩 삭제가 불가합니다. 최종제출하겠습니까?",
+			  text: "펀딩수정은 가능합니다.",
+			  icon: "warning",
+			  buttons: true,
+			  dangerMode: true,
+			})
+			.then(function(){
+				$.ajax({
+					url:`${pageContext.request.contextPath}/funding/finalSubmit`,
+					method: "PUT",
+					success(data){
+						console.log(data);
+						const {msg} = data;
+						window.location.href = `${pageContext.request.contextPath}/funding/fundingStart1/\${msg}`;
+					},
+					error: console.log
+					});
+		});
+	}
+	
 
 	function finalYSubmit(){
 
 		$.ajax({
 			url:`${pageContext.request.contextPath}/funding/finalYSubmit`,
-			method: "put",
+			method: "GET",
 			success(data){
 				console.log(data);
 				const {msg} = data;
@@ -251,7 +309,7 @@
   		.then(function(){
   			$.ajax({
   				url:`${pageContext.request.contextPath}/funding/finalNSubmit`,
-  				method: "put",
+  				method: "PUT",
   				success(data){
   					console.log(data);
   					const {msg} = data;

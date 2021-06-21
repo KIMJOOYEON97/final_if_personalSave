@@ -15,12 +15,16 @@ public interface FundingService {
 	//김윤수
 	List<Integer> selectMyLikeNoList(int memberNo);
 	Funding selectOneFundingKYS(int no);
+	int selectMyPartiCnt(int memberNo);
+	int selectMyCreateCnt(int memberNo);
 	
 	//김경태
 	
 	//김주연
 	List<FundingExt> statusYList(int memberNo);
 	List<FundingExt> statusNList(int memberNo);
+	List<FundingExt> nowList(int memberNo);
+	List<FundingExt> finishList(int memberNo);	
 	int ready1FundingInsertNo(Funding funding);
 	FundingExt selectCheckFunding(int fundingNo);
 	int saveCharge(Map<String, Object> param);
@@ -37,7 +41,7 @@ public interface FundingService {
 	int finalNSubmit(int fundingNo);
 	int deleteFunding(int fundingNo);
 	FundingExt loadFunding(int fundingNo);
-	int savePhone(Map<String, Object> map);
+	
 	
 	//박요한
 	List<Funding> fundingNews(int funding_no);
@@ -60,12 +64,16 @@ public interface FundingService {
 
 	
 	//천호현
-	public Funding selectOneFunding(int fundingNo);
-	public int selectOneFunding2(int fundinNo);
+	public FundingExt selectOneFunding(int fundingNo);
+	
+	
+	int fundingParticipationCount(int fundinNo);
 	Map<String, Object> likeCheck(Map<String, Object> map);
 	int insertLike(Map<String, Object> map);
 	int updateLike(Map<String, Object> result);
 	int likeCount(Map<String, Object> map);
 	int likeStatusCheck(int membeNo);
+	List<Reward> selectRewardList(int fundingNo);
+	
 
 }

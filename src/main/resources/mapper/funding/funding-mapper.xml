@@ -24,6 +24,18 @@
 			  and status ='Y'
 	</select>
 	
+	<select id="selectMyPartiCnt" resultType="_int">
+		select count(*)
+		from funding_participation
+		where member_no = #{memberNo}
+	</select>
+	
+	<select id="selectMyCreateCnt" resultType="_int">
+		select count(*)
+		from funding
+		where writer_no = #{memberNo} and status='Y'
+	</select>
+	
 	<resultMap type="funding" id="fundingVoMap">
 		<result column="status" property="status" typeHandler="booleanYnTypeHandler"/>
 	</resultMap>
@@ -33,8 +45,9 @@
 	<select id="statusYList" resultMap="fundingExtMap">
 		select *
 		from funding
-		where 
-		    writer_no = #{memberNo}
+		where
+			<![CDATA[start_date > sysdate]]>
+		    and writer_no = #{memberNo}
 		    and status = 'Y'
 		order by
 			funding_no desc
@@ -42,9 +55,29 @@
 	<select id="statusNList" resultMap="fundingExtMap">
 		select *
 		from funding
-		where 
+		where
 		    writer_no = #{memberNo}
 		    and status = 'N'
+		order by
+			funding_no desc
+	</select>
+	<select id="nowList" resultMap="fundingExtMap">
+		select *
+		from funding
+		where 
+		    <![CDATA[start_date < sysdate and d_day > sysdate]]>
+		    and writer_no = #{memberNo}
+		    and status = 'Y'
+		order by
+			funding_no desc
+	</select>
+	<select id="finishList" resultMap="fundingExtMap">
+		select *
+		from funding
+		where
+			<![CDATA[start_date < sysdate and d_day < sysdate]]> 
+		    and writer_no = #{memberNo}
+		    and status = 'Y'
 		order by
 			funding_no desc
 	</select>
@@ -238,14 +271,7 @@
 			funding_no =#{fundingNo}
 	</delete>
 	
-	<update id="savePhone">
-		update
-			member
-		set
-			phone = #{phone}
-		where
-			member_no = #{memberNo}
-	</update>
+	
 	
 	
 	
@@ -438,23 +464,13 @@
 	</select>
 	<!-- 천호현 -->
     
-    <select id="selectOneFunding" resultMap="FundingDetailVoMap">
+    <select id="selectOneFunding" resultMap="fundingExtMap">
         select *
-        from funding F 
-            join funding_reward R 
-            on F.funding_no = R.funding_no
-            join attachment A
-            on F.funding_no = A.funding_no
-            join member M
-            on F.writer_no = M.member_no
-        where F.funding_no = #{fundingNo}
+        from funding
+        where funding_no = #{fundingNo}
     </select>
     
-    <resultMap type="FundingDetailVo" id="FundingDetailVoMap">
-        <result column="status" property="status" typeHandler="booleanYnTypeHandler"/>
-    </resultMap>
-    
-    <select id="selectOneFunding2" resultType="_int">
+    <select id="fundingParticipationCount" resultType="_int">
         select count(*) count
         from funding_participation
         where funding_no = #{fundingNo}
@@ -496,5 +512,13 @@
 		from like_record
 		where member_no = #{memberNo} and status = 'Y'
 	</select>
-    
+	
+	<select id="selectRewardList" resultType="reward">
+		select
+			*
+		from
+			funding_reward
+		where
+			funding_no = #{fundingNo}
+	</select>
 </mapper>

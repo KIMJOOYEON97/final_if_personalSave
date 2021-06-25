@@ -1,6 +1,7 @@
 package com.kh.interactFunding.funding.model.dao;
 
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,10 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.kh.interactFunding.funding.model.vo.Attachment;
+import com.kh.interactFunding.funding.model.vo.Comment;
 import com.kh.interactFunding.funding.model.vo.Funding;
+import com.kh.interactFunding.funding.model.vo.FundingBoard;
 import com.kh.interactFunding.funding.model.vo.FundingExt;
+import com.kh.interactFunding.funding.model.vo.FundingParticipationCollection;
 import com.kh.interactFunding.funding.model.vo.Reward;
-import com.kh.interactFunding.member.model.vo.Member;
+import com.kh.interactFunding.member.model.vo.Point;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,9 +49,25 @@ public class FundingDaoImpl implements FundingDao{
 	public int selectMyCreateCnt(int memberNo) {
 		return session.selectOne("funding.selectMyCreateCnt",memberNo);
 	}
-	
+	@Override
+	public List<Point> selectMyPointList(int memberNo) {
+		return session.selectList("funding.selectMyPointList",memberNo);
+	}
+	@Override
+	public List<Integer> selectMyParticiFunding(int memberNo) {
+		return session.selectList("funding.selectMyParticiFunding",memberNo);
+	}
+	@Override
+	public FundingParticipationCollection selectOneFundingParticipationCollection(Map<String, Object> param) {
+		return session.selectOne("funding.selectOneFundingParticipationCollection",param);
+	}
+	@Override
+	public int cancelReward(int no) {
+		Map<String, Integer> map = new HashMap<>();
+		map.put("no", no);
+		return session.update("funding.cancelReward",map);
+	}
 	//김경태
-	
 	//김주연
 	@Override
 	public List<FundingExt> statusYList(int memberNo) {
@@ -136,31 +156,38 @@ public class FundingDaoImpl implements FundingDao{
 	
 	//박요한
 	@Override
-	public List<Funding> fundingNews(int funding_no) {
-		return session.selectList("funding.fundingNews", funding_no);
+	public List<FundingBoard> selectNewsList(int fundingNo) {
+		return session.selectList("funding.selectNewsList", fundingNo);
 	}
+	
+	@Override
+	public FundingBoard selectOneNews(int no) {
+		return session.selectOne("funding.selectOneNews", no);
+	}
+	
+	@Override
+	public List<Comment> selectCommentList(int fundingNo) {
+		return session.selectList("funding.selectCommentList", fundingNo);
+	}
+	
+	@Override
+	public int insertComment(Comment comment) {
+		return session.insert("funding.insertComment", comment);
+	}
+	
+	
 	
 	//배기원
 	@Override
 	public List<Funding> indexfundingList() {
 		return session.selectList("funding.indexfundingList");
 	}
-	@Override
-	public List<Funding> indexfundinglike() {
-		return session.selectList("funding.indexfundinglike");
-	}
+
 	@Override
 	public List<Funding> indexviewlist() {
 		return session.selectList("funding.indexviewlist");
 	}
-	@Override
-	public int indexTotalContents() {
-		return session.selectOne("funding.indexTotalContents");
-	}
-//	@Override
-//	public List<Funding> indexEarlyList() {
-//		return session.selectList("funding.indexEarlyList");
-//	}
+	
 	@Override
 	public List<Funding> indexlikelist() {
 		return session.selectList("funding.indexlikelist");
@@ -169,6 +196,11 @@ public class FundingDaoImpl implements FundingDao{
 	@Override
 	public List<Funding> indexfundingRefresh() {
 		return session.selectList("funding.indexfundingRefresh");
+	}
+	
+	@Override
+	public List<Funding> indexRankingviewlist() {
+		return session.selectList("funding.indexRankingviewlist");
 	}
 	//이승우
 	@Override
@@ -181,14 +213,24 @@ public class FundingDaoImpl implements FundingDao{
 	}
 	
 	@Override
-	public List<Funding> earlyList() {
-		return session.selectList("funding.selectEarlyList");
+	public List<Funding> earlyList(Map<String, Object> map) {
+		int offset = (int)map.get("offset");
+		int limit = (int)map.get("limit");
+		RowBounds rowBounds = new RowBounds(offset, limit);
+		log.debug("map@dap = {}", map);
+		return session.selectList("funding.selectEarlyList", map, rowBounds);
 	}
 	
 	@Override
 	public int selectFundingListTotalContents(Map<String, Object> map) {
 		return session.selectOne("funding.selectFundingListTotalContents", map);
 	}
+	
+	@Override
+	public int selectEarlyListTotalContents() {
+		return session.selectOne("funding.selectEarlyListTotalContents");
+	}
+	
 	
 	//천호현
 

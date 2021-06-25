@@ -51,8 +51,7 @@
 	<div id="funding_top_title_wrapper_wrapper">
 		<div id="funding_top_title_wrapper">
 			<div id="funding_top_title">
-				<img src="${pageContext.request.contextPath }/resources/images/city1.PNG" id="funding_top_title_image">
-				
+				<img src="${pageContext.request.contextPath }/resources/upload/${funding.attachment.renamedFilename}" id="funding_top_title_image">
 			</div>
 			<div id="funding_top_title_div">
 			    <c:if test="${funding.categoryCode == 'C1'}"><span class="category_code_span">테크·가전</span></c:if>
@@ -73,16 +72,16 @@
 		<div id="funding_tap">
 	            <ol>
 	                <li>
-	                    <a href="${pageContext.request.contextPath }/funding/fundingDetail">스토리</a>
+	                    <a href="${pageContext.request.contextPath }/funding/fundingDetail?fundingNo=${funding.fundingNo}">스토리</a>
 	                </li>
 	                <li>
-	                    <a href="${pageContext.request.contextPath }/funding/news.do">새소식</a>
+	                    <a href="${pageContext.request.contextPath }/funding/news.do?fundingNo=${funding.fundingNo}">새소식</a>
 	                </li>
 	                <li>
-	                    <a href="${pageContext.request.contextPath }/funding/community.do">커뮤니티</a>
+	                    <a href="${pageContext.request.contextPath }/funding/community.do?fundingNo=${funding.fundingNo}">커뮤니티</a>
 	                </li>
 	                <li>
-	                    <a href="${pageContext.request.contextPath }/funding/supporter.do">서포터</a>
+	                    <a href="${pageContext.request.contextPath }/funding/supporter.do?fundingNo=${funding.fundingNo}">서포터</a>
 	                </li>
 	            </ol>
 	        </div>
@@ -91,18 +90,13 @@
         <div id="funding_main">
             <div id="funding_main_image_and_content">
                 <div id="funding_main_image">
-                    <img src="${pageContext.request.contextPath }/resources/images/city1.PNG" alt="" style="width: 100%; height: 100%;">
-   					<%-- ${funding.originalFileName}
-					${funding.renamedFileName} --%>
+                    <img src="${pageContext.request.contextPath }/resources/upload/${funding.attachment.renamedFilename}" alt="" style="width: 100%; height: 100%;">
                 </div>
 
                 <div id="funding_main_content">
                  	<br />	<br />	<br />	<br />	<br />
-              		
               		${funding.content}
            		    ${funding.earlyContent}
-           		    
-           		    ${funding.attachment.renamedFilename}
                 </div>
             </div>
 
@@ -141,7 +135,7 @@
                 <div id="funing_main_right_div_2">
             		 
                 	<div id="funding_detail_maker_logo_name_div">
-                		<div id="funding_detail_maker_name">${wirterName}</div>
+                		<div id="funding_detail_maker_name" data-toggle="modal" data-target="#modalSendMsg" data-tomemberno="${funding.writerNo}" onclick="msgSetting(this)">${wirterName}</div>
                 	</div>
                 		<div id="funding_detail_maker_phone">메이커 연락처 <br/>${funding.phone}</div>
                     <input type="button" value="메이커에게 문의하기" id="funding_detail_maker_chat_button" class="btn btn-info"
@@ -151,10 +145,30 @@
 
 
                 <span id="reward_span">리워드 선택</span>
-                <div id="funing_main_right_div_3">
+                
+                <c:forEach var="reward" items="${reward}">
+	                <div id="funing_main_right_div_3" class="funding_main_reward_choice_div" data-choice="${reward.rewardNo}">
+	                	${reward.price}원 펀딩
+	                	<br />
+	                	${reward.title}!!
+	                	<br />
+	                	${reward.content} 혜택
+	                	<br />
+	                	배송비 
+	                	<br />
+	                	${reward.shippingPrice}
+	                	<br />
+	                	리워드 발송 시작일
+	                	<br />
+	                	${reward.rewardNo} 리워드넘버
+	                	<br />
+	                	${reward.limitAmount} 개 남음!!
+	                	<br/>
+	                	ㅁㅁㅁㅁ 펀딩완료
+				   </div>
+                </c:forEach>
 				
 				
-                </div>
 
 				<span id="ranking_span">인기게시글</span>
                 <div id="funing_main_right_div_4">
@@ -269,6 +283,11 @@
     padding-top: 9px;
     }
     
+    #funing_main_right_div_3{
+    margin-bottom: 13px;
+    
+    }
+    
     /* 펀딩하기버튼 */
     #funding_button {
     width: 96%;
@@ -326,6 +345,11 @@
 	font-size: 21px;
 	}
 	
+	.funding_main_reward_choice_div:hover{
+	
+	}
+	
+	
     </style>
     
 	<script>
@@ -355,7 +379,15 @@
 				$("#funding_detail_like_button").attr("onclick","like_controll();");
 			} 
 		})
-	}
+	};
+
+	$(".funding_main_reward_choice_div").click(function(e){
+		
+		var choice = $(e.target).data("choice")
+		location.href="${pageContext.request.contextPath}/funding/fundingReward?fundingNo=${funding.fundingNo}&&choice="+choice;
+	});
+
+		
 	</script>	
 
 

@@ -3,6 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <jsp:include page="/WEB-INF/views/common/header.jsp">
 	<jsp:param value="마이페이지" name="title" 	/>
 </jsp:include>
@@ -20,7 +21,13 @@
 			<div id="detailsbox">개인회원·서포터<c:if test="${not empty loginMember.phone}">·메이커</c:if></div>
 			<hr />
 			<div id="platformbox"><strong>${loginMember.platform}</strong>로 로그인중</div>
-			<input type="button" class="btn btn-outline-dark btn-lg" value="로그아웃" id="logoutbtn" onclick="logout();"/>
+			<form:form action="${pageContext.request.contextPath}/member/logout" method="post">
+				<input type="submit" class="btn btn-outline-dark btn-lg" value="로그아웃" id="logoutbtn"/>
+			</form:form>
+			<!-- 관리자용 회원조회 -->
+			<c:if test="${fn:contains(loginMember.authorities, 'ROLE_ADMIN')}">
+				<input type="button" class="btn btn-outline-dark btn-lg" value="관리" id="adminbtn" style="font-weight:bold; margin-left:86px; margin-top:20px;" onclick='location.href="${pageContext.request.contextPath}/admin/memberList"'/>
+			</c:if>
 		</div>
 		<div id="detailsRight">
 			<h5><strong>나의 프로젝트</strong></h5>
@@ -137,7 +144,7 @@
 	      		<c:forEach items="${pList}" var="point" varStatus="var">
 	      			<tr>
 	      				<td scope="row">${var.count}</td>
-	      				<td><fmt:formatDate value="${point.regDate}" pattern="yy/MM/dd hh:mm"/></td>
+	      				<td><fmt:formatDate value="${point.regDate}" pattern="yy/MM/dd HH:mm"/></td>
 	      				<td>${point.point}</td>
 	      				<td>${point.memo}</td>
 	      			</tr>
@@ -152,11 +159,6 @@
 	  </div>
 	</div>
 	<script>
-	//로그아웃 함수
-	function logout(){
-		location.href='${pageContext.request.contextPath}/member/logout';
-	}
-
 	//change1, change2 포인트 충전 눌렀을대 서로 교체됨
 	function change1(){
 		$("#chgBox1").hide();

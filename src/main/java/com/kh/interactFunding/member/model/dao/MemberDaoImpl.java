@@ -83,6 +83,41 @@ public class MemberDaoImpl implements MemberDao {
 		return session.update("member.msgReadStatusChg",no);
 	}
 	
+	@Override
+	public int insertCertificationCode(Map<String, Object> param) {
+		return session.insert("member.insertCertificationCode", param);
+	}
+	
+	@Override
+	public Map<String, String> selectOneCertification(Member member) {
+		return session.selectOne("member.selectOneCertification", member);
+	}
+
+	@Override
+	public int changePassword(Map<String, Object> map) {
+		return session.update("member.changePassword",map);
+	}
+
+	@Override
+	public int deleteCertificationCode(Map<String, Object> map) {
+		return session.delete("member.deleteCertificationCode",map);
+	}
+	
+	@Override
+	public Member selectOneMemberKakao(Member m) {
+		return session.selectOne("member.selectOneMemberKakao",m);
+	}
+	
+	@Override
+	public int inserMemberKakao(Member member) {
+		return session.insert("member.insertMemberKakao",member);
+	}
+	
+	@Override
+	public int selectOneBlackList(Member member) {
+		return session.selectOne("member.selectOneBlackList",member);
+	}
+	
 	
 
 	// 김경태
@@ -94,9 +129,16 @@ public class MemberDaoImpl implements MemberDao {
 	}
 	// 박요한
 
+
 	// 배기원
 
 	// 이승우
 
 	// 천호현
+
+	@Override
+	public String selectOneMemberPoint(int memberNo) {
+		return session.selectOne("member.selectOneMemberPoint",memberNo);
+	}
+	
 }

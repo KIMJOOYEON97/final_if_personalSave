@@ -25,7 +25,7 @@
 	</select>
 	
 	<select id="selectMyPartiCnt" resultType="_int">
-		select count(*)
+		select count(distinct(funding_no))
 		from funding_participation
 		where member_no = #{memberNo} and status='Y'
 	</select>
@@ -69,22 +69,22 @@
 	<resultMap type="fundingParticipationCollection" id="selectOneFundingParticipationCollectionMap">
 		<result column="funding_no" property="fundingNo"/>
 		<result column="member_no" property="memberNo"/>
-		<result column="reg_date" property="regDate"/>
-		<result column="status" property="status" typeHandler="booleanYnTypeHandler"/>
-		<result column="point" property="point"/>
-		<result column="address" property="address"/>
-		<result column="name" property="name"/>
-		<result column="phone" property="phone"/>
-		<result column="etc" property="etc"/>
 		<collection property="rewardList" ofType="rewardCollection">
 			<id column="no" property="no"/>
 			<result column="reward_no" property="rewardNo"/>
+			<result column="point" property="point"/>
 			<result column="price" property="price"/>
 			<result column="title" property="title"/>
 			<result column="content" property="content"/>
 			<result column="shipping_price" property="shippingPrice"/>
 			<result column="limit_amount" property="limitAmount"/>
 			<result column="shipping_date" property="shippingDate"/>
+			<result column="reg_date" property="regDate"/>
+			<result column="status" property="status" typeHandler="booleanYnTypeHandler"/>
+			<result column="address" property="address"/>
+			<result column="name" property="name"/>
+			<result column="phone" property="phone"/>
+			<result column="etc" property="etc"/>
 		</collection>
 	</resultMap>
 	
@@ -271,7 +271,13 @@
 				#{limitAmount},
 				#{shippingDate}		
 			)
-		
+		<!-- 천호현이 추가함 -->
+		<selectKey keyProperty="rewardNo" resultType="_int" order="AFTER">
+			select
+				seq_funding_reward_no.currval
+			from 
+				dual
+		</selectKey>
 	</insert>
 	
 	<update id="updateReward">
@@ -343,13 +349,50 @@
 			no = #{no}
 	</select>
 	
+	<insert id="insertNews">
+		insert into
+			funding_board(
+				no,
+				funding_no,
+				writer_no,
+				title,
+				content
+			)
+		values (
+			seq_funding_board_no.nextval,
+			#{fundingNo},
+			#{writerNo},
+			#{title},
+			#{content}
+		)
+	</insert>
+	
+	<delete id="deleteNews">
+		delete
+			funding_board
+		where
+			no = #{no}
+	</delete>
+	
+	<update id="updateNews">
+		update
+			funding_board
+		<set>
+			title = #{title},
+			content = #{content},
+		</set>
+		where 
+			no = #{no}
+	</update>
+	
 	<select id="selectCommentList" resultType="comment">
 		select
 			*
 		from
-			funding_comment
+			funding_comment f join member m on f.writer_no = m.member_no
 		where
 			funding_no = #{fundingNo}
+		order by comment_no desc
 	</select>
 	
 	<insert id="insertComment">
@@ -367,14 +410,36 @@
 			#{fundingNo}
 		)
 	</insert>
-	<select id="newsView" resultMap="fundingExtMap">
-		select *
-        from funding F 
-            join funding_board R 
-            on F.funding_no = R.funding_no
-            join member M
-            on F.writer_no = M.member_no
-        where F.funding_no = #{funding_no}
+	
+	<delete id="deleteComment">
+		delete
+			funding_comment
+		where
+			comment_no = #{commentNo}
+	</delete>
+	
+	<select id="participationList" resultType="fundingParticipation">
+		select
+			*
+		from
+			funding_participation
+		where funding_no = #{fundingNo}
+		order by no
+	</select>
+	
+	<select id="participationSelectOne" resultType="fundingParticipation">
+		select distinct
+			name
+		from
+			funding_participation
+		where
+			funding_no = #{fundingNo}
+	</select>
+	
+	<select  id="fundingParticipationCountOne" resultType="_int">
+        select count(distinct name) count
+        from funding_participation
+        where funding_no = #{fundingNo}
 	</select>
 
 	<!-- 배기원 -->
@@ -389,18 +454,6 @@
 		order by reg_date desc
 		) f
 		where rownum between 1 and 6
-	</select>
-	<!-- 회원들이 좋아할 프로젝트 받아오는(조회순) 객체입니다. -->
-	<select id="indexviewlist" resultMap="fundingVoMap">
-		select rownum, f.*
-		from (
-		select funding.*
-		from funding
-		where <![CDATA[start_date < sysdate and d_day > sysdate]]>
-		and status ='Y'
-		order by readcount desc
-		) f
-		where rownum between 1 and 4
 	</select>
 	<!-- 실시간랭킹 리스트입니다. -->
 	<select id="indexlikelist" resultMap="fundingVoMap">
@@ -438,11 +491,36 @@
 		) f
 		where rownum between 1 and 6
    	</select>
-    
+   	
+   	<select id="selectMyListJson" resultType="string">
+   		select my_list from funding_mylist where member_no = #{memberNo}
+   	</select>
+   	
+   	<delete id="deleteMyListJson">
+   		delete from funding_mylist
+   		where member_no = #{memberNo}
+   	</delete>
+   	
+   	<insert id="insertMyListJson">
+   		insert into funding_mylist
+   		values(#{memberNo}, #{json})
+   	</insert>
+   <select id="indexearlylist" resultMap="fundingVoMap">
+	select rownum, f.*
+		from (
+		select funding.*
+		from funding
+		where <![CDATA[ start_date > sysdate]]>
+		and status ='Y'
+		order by reg_date desc
+		) f
+		where rownum between 1 and 6   
+   </select>
     
 	<!-- 이승우 -->
 	<!-- searchKeyword searchSelect1 searchSelect2 category -->
 	<!-- processing selected(진행중 종료) recent recommand (최신순 과거순) -->
+	<select id=""></select>
 	<select id="selectFundingList" resultMap="fundingVoMap">
 		select *
 		from funding
@@ -489,6 +567,23 @@
 			</if>
 		</where>
 	</select>
+	<select id="selectFundingListBanner" resultMap="fundingVoMap">
+		select
+		rownum,
+		f.*
+		from(
+		    select
+		    *
+		    from
+		    funding f
+		    where status = 'Y'
+		    and start_date <![CDATA[<]]> sysdate
+		    and d_day <![CDATA[>]]> sysdate
+		    order by funding_no desc
+		) f
+		where rownum between 1 and 5
+		order by dbms_random.random
+	</select>
 	<select id="selectEarlyList" resultMap="fundingVoMap">
 		select * 
 		from funding
@@ -504,6 +599,22 @@
 			status = 'Y'
 			and start_date <![CDATA[>]]> sysdate
 		</where>
+	</select>
+	<select id="selectEarlyListBanner" resultMap="fundingVoMap">
+		select
+		rownum,
+		f.*
+		from(
+		    select
+		    *
+		    from
+		    funding f
+		    where status = 'Y'
+		    and start_date <![CDATA[>]]> sysdate
+		    order by funding_no desc
+		) f
+		where rownum between 1 and 5
+		order by dbms_random.random
 	</select>
 	<!-- 천호현 -->
     
@@ -524,10 +635,21 @@
     	from like_record
     	where member_no = #{memberNo} and funding_no = #{fundingNo}
     </select>
+    
+    <select id="alramCheck" resultMap="alramMap">
+    	select *
+    	from alram_early_funding
+    	where member_no = #{memberNo} and funding_no = #{fundingNo}
+    </select>
 	   
 	<insert id="insertLike">
 		insert into like_record
 		values (seq_like_record_no.nextval, #{fundingNo}, #{memberNo}, 'Y')
+	</insert>
+	
+	<insert id="insertAlram">
+		insert into alram_early_funding
+		values (seq_alram_early_no.nextval, #{fundingNo}, #{memberNo}, 'Y')
 	</insert>
 	
 	<resultMap type="map" id="likeMap">
@@ -537,8 +659,20 @@
 		<result column="member_no" property="memberNo"/>
 	</resultMap>
 	
+	<resultMap type="map" id="alramMap">
+		<id column="no" property="no"/>
+		<result column="status" property="status" typeHandler="booleanYnTypeHandler"/>
+		<result column="funding_no" property="fundingNo"/>
+		<result column="member_no" property="memberNo"/>
+	</resultMap>
+	
 	<update id="updateLike">
 		update like_record
+		set status = #{status, typeHandler=booleanYnTypeHandler}
+		where no = #{no}
+	</update>
+	<update id="updateAlram">
+		update alram_early_funding
 		set status = #{status, typeHandler=booleanYnTypeHandler}
 		where no = #{no}
 	</update>
@@ -553,6 +687,12 @@
 	<select id="likeStatusCheck" resultType="_int">
 		select count(*)
 		from like_record
+		where member_no = #{memberNo} and status = 'Y' and funding_no = #{fundingNo}
+	</select>
+	
+	<select id="alramStatusCheck" resultType="_int">
+		select count(*)
+		from alram_early_funding
 		where member_no = #{memberNo} and status = 'Y'
 	</select>
 	
@@ -562,6 +702,61 @@
 		from
 			funding_reward
 		where
-			funding_no = #{fundingNo}
+			funding_no = #{fundingNo} and not shipping_price = 0 and not limit_amount = 0
+		order by funding_no asc
 	</select>
+	
+	
+	<insert id="insertFundingParticipation">
+		insert into funding_participation 
+		values(seq_funding_participation_no.nextval,
+			   #{fundingNo},
+			   #{memberNo},
+			   sysdate,
+			   'Y',
+			   #{rewardNo},
+			   #{point},
+			   #{address},
+			   #{name},
+			   #{phone},
+			   #{etc})
+	</insert>
+	
+	<insert id="insertChat">
+		insert into funding_chat
+		values(seq_funding_chat_no.nextval, #{fundingNo}, #{content}, #{fromMemberNo}, #{fromMemberName}, sysdate)
+	</insert>
+	
+	<select id="selectChatList" resultType="messageVo">
+		select * from funding_chat
+		where funding_no = #{fundingNo}
+		order by no asc
+	</select>
+	
+	<update id="fundingViewCountUp" >
+		update funding 
+		set readcount = readcount+1
+		where funding_no = #{fundingNo}
+	</update>
+	
+	
+	<select id="selectEarlyMemberList" resultType="EarlyStartMessage">
+		select e.no,
+	        e.funding_no,
+	        e.member_no,
+	        f.start_date
+		from alram_early_funding e join funding f
+	    	on e.funding_no = f.funding_no
+	    where to_char(f.start_date, 'yyyymmdd' ) = to_char( sysdate, 'yyyymmdd')
+	</select>
+	
+	
+	<!-- insert into message
+	values(seq_message_no.nextval, #{toMemberNo}, #{fromMemberNo}, #{fromMemberName}, #{title}, #{content}, default, #{toMemberName}) -->
+	<insert id="sendAlramMessage">
+		insert into message
+		values(seq_message_no.nextval, #{memberNo}, 121 , '이프운영진', 펀딩 시작 알람메시지, #{title} || '해당 펀딩시작 알람 메세지 드립니다', default, #{memberNo})
+	</insert>
+	
+	
 </mapper>

@@ -16,6 +16,11 @@
 		values(seq_member_no.nextval, #{email}, #{password}, #{name}, #{platform}, default)
 	</insert>	
 	
+	<insert id="insertMemberKakao">
+		insert into member(member_no, email, password, name, platform, reg_date) 
+		values(seq_member_no.nextval, #{email}, #{password}, #{name}, #{platform}, default)
+	</insert>
+	
 	<select id="selectOneMember" resultType="member">
 		select * 
 		from member
@@ -77,6 +82,70 @@
 	<resultMap type="msg" id="MsgMap">
 		<result column="read" property="read" typeHandler="booleanYnTypeHandler"/>
 	</resultMap>
+	
+	<insert id="insertCertificationCode">
+		insert into pwd_certification
+		values (seq_pwd_certification_no.nextval, #{member.memberNo}, #{code})
+	</insert>
+	
+	<select id="selectOneCertification" resultMap="certificationMap">
+		select * from pwd_certification
+		where member_no = #{memberNo}
+	</select>
+	<resultMap type="map" id="certificationMap">
+		<id column="no" property="no"/>
+		<result column="member_no" property="memberNo"/>
+		<result column="certification_code" property="certificationCode"/>
+	</resultMap>
+	
+	<update id="changePassword">
+		update member
+		set password = #{password}
+		where member_no = #{memberNo}
+	</update>
+	
+	<delete id="deleteCertificationCode">
+		delete from pwd_certification
+		where member_no = #{memberNo}
+	</delete>
+	
+	<select id="selectOneMemberKakao" resultMap="memberMap">
+		select * 
+		from member
+		where email = #{email} and platform= 'KAKAO'
+	</select>
+	<resultMap type="member" id="memberMap">
+		<id column="member_no" property="memberNo"/>
+		<result column="email" property="email"/>
+		<result column="password" property="password"/>
+		<result column="name" property="name"/>
+		<result column="platform" property="platform"/>
+		<result column="access_token" property="accessToken"/>
+		<result column="point" property="point"/>
+		<result column="reg_date" property="regDate"/>
+		<result column="phone" property="phone"/>
+		<collection property="authorities" 
+					javaType="arraylist"
+					column="member_no"
+					ofType="simpleGrantedAuthority"
+					select="selectAuthorities"/>
+	</resultMap>
+	<select id="selectAuthorities" resultMap="authoritiesMap">
+		select * 
+		from authority
+		where member_no = #{memberNo}
+	</select>
+	<resultMap type="simpleGrantedAuthority" id="authoritiesMap">
+		<constructor>
+			<arg column="authority" javaType="string"/>
+		</constructor>
+	</resultMap>
+	
+	<select id="selectOneBlackList" resultType="_int">
+		select count(*)
+		from blackList
+		where email = #{email}
+	</select>
 	<!-- 김경태 -->
 	<!-- 김주연 -->
 	<update id="savePhone">
@@ -91,4 +160,12 @@
 	<!-- 배기원 -->
 	<!-- 이승우 -->
 	<!-- 천호현 -->
+	
+	<select id="selectOneMemberPoint" resultType="string">
+	    select point
+	    from member
+	    where member_no = #{memberNo}
+	</select>
+	
+	
 </mapper>

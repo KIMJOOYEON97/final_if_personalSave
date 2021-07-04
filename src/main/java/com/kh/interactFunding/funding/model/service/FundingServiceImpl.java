@@ -1,5 +1,6 @@
 package com.kh.interactFunding.funding.model.service;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -12,9 +13,12 @@ import com.kh.interactFunding.funding.model.vo.Comment;
 import com.kh.interactFunding.funding.model.vo.Funding;
 import com.kh.interactFunding.funding.model.vo.FundingBoard;
 import com.kh.interactFunding.funding.model.vo.FundingExt;
+import com.kh.interactFunding.funding.model.vo.FundingParticipation;
 import com.kh.interactFunding.funding.model.vo.FundingParticipationCollection;
 import com.kh.interactFunding.funding.model.vo.Reward;
 import com.kh.interactFunding.member.model.vo.Point;
+import com.kh.interactFunding.schedule.vo.EarlyStartMessage;
+import com.kh.interactFunding.websocket.vo.MessageVo;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -263,6 +267,40 @@ public class FundingServiceImpl implements FundingService{
 		return fundingDao.insertComment(comment);
 	}
 	
+	@Override
+	public List<FundingParticipation> participationList(int fundingNo) {
+		return fundingDao.participationList(fundingNo);
+	}
+	
+	@Override
+	public int insertNews(FundingBoard fundingBoard) {
+		return fundingDao.insertNews(fundingBoard);
+	}
+	
+	@Override
+	public int updateNews(FundingBoard fundingBoard) {
+		return fundingDao.updateNews(fundingBoard);
+	}
+	
+	@Override
+	public int deleteNews(int no) {
+		return fundingDao.deleteNews(no);
+	}
+	
+	@Override
+	public int deleteComment(Comment comment) {
+		return fundingDao.deleteComment(comment);
+	}
+	
+	@Override
+	public List<FundingParticipation> participationSelectOne(int fundingNo) {
+		return fundingDao.participationSelectOne(fundingNo);
+	}
+	@Override
+	public int fundingParticipationCountOne(int fundingNo) {
+		return fundingDao.fundingParticipationCountOne(fundingNo);
+	}
+	
 	
 	
 	// 배기원
@@ -277,18 +315,6 @@ public class FundingServiceImpl implements FundingService{
 			funding.setAttachment(fundingDao.selectOneAttach(funding.getFundingNo()));
 		}
 
-		return fundingList;
-	}
-	/**
-	 * 회원들이 좋아할 프로젝트 (조회순 리스트 1~4)
-	 */
-	@Override
-	public List<Funding> indexviewlist() {
-		List<Funding> fundingList = fundingDao.indexviewlist();
-
-		for (Funding funding : fundingList) {
-			funding.setAttachment(fundingDao.selectOneAttach(funding.getFundingNo()));
-		}
 		return fundingList;
 	}
 	/**
@@ -325,6 +351,29 @@ public class FundingServiceImpl implements FundingService{
 		}
 		return fundingList;
 	}
+	@Override
+	public String selectMyListJson(int memberNo) {
+		return fundingDao.selectMyListJson(memberNo);
+	}
+	
+	@Override
+	public int deleteMyListJson(Map<String, Object> param) {
+		return fundingDao.deleteMyListJson(param);
+	}
+	@Override
+	public int insertMyListJson(Map<String, Object> param) {
+		return fundingDao.insertMyListJson(param);
+	}
+	
+	
+	@Override
+	public List<Funding> indexearlyList() {
+		List<Funding>indexearlyList=fundingDao.indexearlylist();
+		for (Funding funding : indexearlyList) {
+			funding.setAttachment(fundingDao.selectOneAttach(funding.getFundingNo()));
+		}
+		return indexearlyList;
+	}
 	//이승우
 	@Override
 	public List<Funding> fundingList(Map<String, Object> map) {
@@ -338,13 +387,39 @@ public class FundingServiceImpl implements FundingService{
 	}
 
 	@Override
+	public List<Funding> fundingListBanner() {
+		List<Funding> fundingListBanner = fundingDao.fundingListBanner();
+		
+		for(Funding funding: fundingListBanner) {
+			funding.setAttachment(fundingDao.selectOneAttach(funding.getFundingNo()));
+		}
+		
+		return fundingListBanner;
+	}
+	
+	@Override
+	public List<Funding> earlyListBanner() {
+		List<Funding> earlyListBanner = fundingDao.earlyListBanner();
+		
+		for(Funding funding: earlyListBanner) {
+			funding.setAttachment(fundingDao.selectOneAttach(funding.getFundingNo()));
+		}
+		return earlyListBanner;
+	}
+	
+	@Override
 	public int selectFundingListTotalContents(Map<String, Object> map) {
 		return fundingDao.selectFundingListTotalContents(map);
 	}
 	
 	@Override
 	public List<Funding> earlyList(Map<String, Object> map) {
-		return fundingDao.earlyList(map);
+		List<Funding> earlyList = fundingDao.earlyList(map);
+		
+		for(Funding funding: earlyList) {
+			funding.setAttachment(fundingDao.selectOneAttach(funding.getFundingNo()));
+		}
+		return earlyList;
 	}
 
 	@Override
@@ -373,25 +448,70 @@ public class FundingServiceImpl implements FundingService{
 		return fundingDao.likeCheck(map);
 	}
 	@Override
+	public Map<String, Object> alramCheck(Map<String, Object> map) {
+		return fundingDao.alramCheck(map);
+	}
+	@Override
 	public int insertLike(Map<String, Object> map) {
 		return fundingDao.insertLike(map);
+	}
+	@Override
+	public int insertAlram(Map<String, Object> map) {
+		return fundingDao.insertAlram(map);
 	}
 	@Override
 	public int updateLike(Map<String, Object> map) {
 		return fundingDao.updateLike(map);
 	}
 	@Override
+	public int updateAlram(Map<String, Object> map) {
+		return fundingDao.updateAlram(map);
+	}
+	@Override
 	public int likeCount(Map<String, Object> map) {
 		return fundingDao.likeCount(map);
 	}
 	@Override
-	public int likeStatusCheck(int memberNo) {
-		return fundingDao.likeStatusCheck(memberNo);
+	public int likeStatusCheck(Map<String, Integer> map) {
+		return fundingDao.likeStatusCheck(map);
+	}
+	@Override
+	public int alramStatusCheck(int memberNo) {
+		return fundingDao.alramStatusCheck(memberNo);
 	}
 	@Override
 	public List<Reward> selectRewardList(int fundingNo) {
 		return fundingDao.selectRewardList(fundingNo);
 	}
+	@Override
+	public int insertFundingParticipation(FundingParticipation fp) {
+		return fundingDao.insertFundingParticipation(fp);
+	}
+	@Override
+	public int insertChat(MessageVo msg) {
+		return fundingDao.insertChat(msg);
+	}
+	@Override
+	public List<MessageVo> selectChatList(int fundingNo) {
+		return fundingDao.selectChatList(fundingNo);
+	}
+	@Override
+	public int fundingViewCountUp(int fundingNo) {
+		return fundingDao.fundingViewCountUp(fundingNo);
+	}
+	@Override
+	public List<EarlyStartMessage> selectEarlyMemberList() {
+		return fundingDao.selectEarlyMemberList();
+	}
+	@Override
+	public int sendAlramMessage(EarlyStartMessage earlyMember) {
+		return fundingDao.sendAlramMessage(earlyMember);
+	}
+	
+	
+	
+	
+	
 	
 
 	

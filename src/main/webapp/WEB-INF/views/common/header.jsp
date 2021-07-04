@@ -1,12 +1,17 @@
+<%@page import="com.kh.interactFunding.member.model.vo.Member"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>	
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
+<meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>
+<meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}"/>
 <title>${param.title}</title>
 
 <!-- header CSS파일 -->
@@ -21,20 +26,27 @@
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <c:if test="${not empty msg}">
 <script>
-	alert("${msg}");
+	swal("알림","${msg}","info");
 </script>
+<c:set var="msg" value="${null}" scope="session"/>
 </c:if>
+<c:set var="URL" value="${fn:replace(pageContext.request.requestURI, pageContext.request.contextPath, '')}" />
+<style>
+.current {color: #00b2b2 !important;}
+</style>
 </head>
 <body>
 	<header>
+	
 		<nav>
 			<ol>
-				<li><a href="${pageContext.request.contextPath}/">이프</a></li>
-				<li><a href="${pageContext.request.contextPath}/funding/fundingList">펀딩하기</a></li>
-				<li><a href="${pageContext.request.contextPath}/funding/earlyList">오픈예정</a></li>
+ 				<li><a href="${pageContext.request.contextPath}/"><img src="${pageContext.request.contextPath}/resources/image/iflogo3.png"alt="logo3" style="height: 30px; margin-top: -6px; "/></a></li>
+				<li><a class="${ URL eq  '/WEB-INF/views/funding/fundingList.jsp' ? 'current' : ''}" href="${pageContext.request.contextPath}/funding/fundingList">펀딩하기</a></li>
+				<li><a class="${ URL eq  '/WEB-INF/views/funding/earlyList.jsp' ? 'current' : ''}" href="${pageContext.request.contextPath}/funding/earlyList">오픈예정</a></li>
 				<li><a href="#">공지사항</a></li>
 			</ol>
 		</nav>
+		
 		<div id="index_searchBar_container" onclick="focus_searchInput()">
 			<div id="searchBar_relative">
 				<input type="text" name="searchKeyword" id="searchKeyword" placeholder="어떤 프로젝트를 찾고 계신가요?" onkeyup="searchStart(this)"/>
@@ -43,43 +55,7 @@
 					</svg>
 			</div>
 		</div>
-		<%-- 로그인 되었을때 --%>
-		<c:if test="${not empty loginMember}">
-			<div id="login_container">
-				<div id="login_relative">
-					<%-- 읽지않은 메시지가 없는 경우 --%>
-					<c:if test="${notReadMsg}">
-						<svg 
-						id="msgIcon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-						xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16">
-						  <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z"/>
-						</svg>
-					</c:if>
-					<%-- 읽지않은 메시지가 있을 경우 --%>
-					<c:if test="${notReadMsg==false}">
-						<svg 
-						id="msgIcon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-						xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16">
-						  <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z"/>
-						</svg>
-					</c:if>
-					<div class="dropdown-menu" aria-labelledby="msgIcon">
-					  <div class="dropdown-item" data-toggle="modal" data-target="#modalReceive">받은 쪽지함</div>
-					  <div class="dropdown-item" data-toggle="modal" data-target="#modalSend">보낸 쪽지함</div>
-					</div>
-					
-					<span><a href="${pageContext.request.contextPath}/member/memberDetails">${loginMember.name}</a>님 환영합니다</span>
-				</div>
-			</div>
-		</c:if>
-		<%-- 로그인 안되었을때 --%>
-		<c:if test="${empty loginMember}">
-			<button type="button" class="btn btn-outline-primary" id="btn_login" onclick="location.href='${pageContext.request.contextPath}/member/login'">로그인</button>
-			<button type="button" class="btn btn-outline-primary" id="btn_enroll" onclick="location.href='${pageContext.request.contextPath}/member/memberEnroll'">회원가입</button>
-		</c:if>
-		<button type="button" class="btn btn-outline-success" id="project_open" onclick="openProject();">프로젝트 오픈 신청</button>
-	</header>
-	<script>
+		<script>
 		function focus_searchInput(){
 			$("#searchKeyword").focus();
 		}
@@ -104,8 +80,51 @@
 				
 	        }
 		}
+		</script>
+		<%-- 로그인 되었을때 --%>
+		<c:if test="${not empty loginMember}">
+			<div id="login_container">
+				<div id="login_relative">
+					<%-- 읽지않은 메시지가 없는 경우 --%>
+					<c:if test="${notReadMsg}">
+						<svg 
+						id="msgIcon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+						xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16">
+						  <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z"/>
+						</svg>
+					</c:if>
+					<%-- 읽지않은 메시지가 있을 경우 --%>
+					<c:if test="${notReadMsg==false}">
+						<svg class="MessageNotRead"
+						id="msgIcon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+						xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16">
+						  <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z"/>
+						</svg>
+					</c:if>
+					<div class="dropdown-menu" aria-labelledby="msgIcon">
+					  <div class="dropdown-item" data-toggle="modal" data-target="#modalReceive">받은 쪽지함</div>
+					  <div class="dropdown-item" data-toggle="modal" data-target="#modalSend">보낸 쪽지함</div>
+					</div>
+					
+					<span><a href="${pageContext.request.contextPath}/member/memberDetails">${loginMember.name}</a>님 환영합니다</span>
+				</div>
+			</div>
+		</c:if>
+		<%-- 로그인 안되었을때 --%>
+		<c:if test="${empty loginMember}">
+			<button type="button" class="btn btn-outline-primary" id="btn_login" onclick="location.href='${pageContext.request.contextPath}/member/login'">로그인</button>
+			<button type="button" class="btn btn-outline-primary" id="btn_enroll" onclick="location.href='${pageContext.request.contextPath}/member/memberEnroll'">회원가입</button>
+		</c:if>
+		<button type="button" class="btn btn-outline-success" id="project_open" onclick="openProject();">프로젝트 오픈 신청</button>
+	</header>
+	<script>
 		function openProject(){
-			//무조건 fundingStart1을 거치게 변경하였습니다. 인증은 번호 변경을 원하는 경우도 있음으로 분기처리 하지 않습니다.
+			if(${empty loginMember}){
+				swal("프로젝트 생성","로그인이 필요합니다!","info").then(function(){
+					location.href='${pageContext.request.contextPath}/member/login';
+				});
+				return;
+			}
 			location.href='${pageContext.request.contextPath}/funding/fundingStart1';
 			
 		}
@@ -113,7 +132,8 @@
 		$('#myModal').on('shown.bs.modal', function () {
 			  $('#myInput').trigger('focus')
 		});
-
+		<% boolean loginCheck = request.getAttribute("loginMember")!=null; %>
+		<% if(loginCheck){ %>
 		//받은메시지함 - 메시지 세부내용 보기 함수
 		function showMsg(div){
 			var msgno = $(div).data("number");
@@ -204,9 +224,15 @@
 			$("#sendContainer").show();
 			$("[type=hidden][name=sendToMemberNo]").val(tono);
 		}
-
+		<%}%>
 		//받은메시지함 - 메시지 발송 함수
 		function sendMsg(btn){
+			if(${empty loginMember}){
+				swal("로그인 필요","메시지를 보내기위해 로그인이 필요합니다","error").then(function(){
+					location.href="${pageContext.request.contextPath}/member/login";
+						return;
+				});
+			}
 			var title = $(btn).parent().parent().find("[name=sendTitle]").val();
 			var content = $(btn).parent().parent().find("[name=sendContent]").val();
 			var no = $(btn).parent().parent().find("[name=sendToMemberNo]").val();
@@ -215,7 +241,9 @@
 				method:"post",
 				data:{
 					toMemberNo:no,
+					<% if(loginCheck){%>
 					fromMemberNo:${loginMember.memberNo},
+					<%}%>
 					fromMemberName:'${loginMember.name}',
 					title:title,
 					content:content,

@@ -1,6 +1,7 @@
 package com.kh.interactFunding.funding.model.dao;
 
 
+import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,9 +16,12 @@ import com.kh.interactFunding.funding.model.vo.Comment;
 import com.kh.interactFunding.funding.model.vo.Funding;
 import com.kh.interactFunding.funding.model.vo.FundingBoard;
 import com.kh.interactFunding.funding.model.vo.FundingExt;
+import com.kh.interactFunding.funding.model.vo.FundingParticipation;
 import com.kh.interactFunding.funding.model.vo.FundingParticipationCollection;
 import com.kh.interactFunding.funding.model.vo.Reward;
 import com.kh.interactFunding.member.model.vo.Point;
+import com.kh.interactFunding.schedule.vo.EarlyStartMessage;
+import com.kh.interactFunding.websocket.vo.MessageVo;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -159,21 +163,55 @@ public class FundingDaoImpl implements FundingDao{
 	public List<FundingBoard> selectNewsList(int fundingNo) {
 		return session.selectList("funding.selectNewsList", fundingNo);
 	}
-	
+
 	@Override
 	public FundingBoard selectOneNews(int no) {
 		return session.selectOne("funding.selectOneNews", no);
 	}
-	
+
 	@Override
 	public List<Comment> selectCommentList(int fundingNo) {
 		return session.selectList("funding.selectCommentList", fundingNo);
 	}
-	
+
 	@Override
 	public int insertComment(Comment comment) {
 		return session.insert("funding.insertComment", comment);
 	}
+
+	@Override
+	public List<FundingParticipation> participationList(int fundingNo) {
+		return session.selectList("funding.participationList", fundingNo);
+	}
+
+	@Override
+	public int insertNews(FundingBoard fundingBoard) {
+		return session.insert("funding.insertNews", fundingBoard);
+	}
+
+	@Override
+	public int updateNews(FundingBoard fundingBoard) {
+		return session.update("funding.updateNews", fundingBoard);
+	}
+
+	@Override
+	public int deleteNews(int no) {
+		return session.delete("funding.deleteNews", no);
+	}
+
+	@Override
+	public int deleteComment(Comment comment) {
+		return session.delete("funding.deleteComment", comment);
+	}
+	@Override
+	public List<FundingParticipation> participationSelectOne(int fundingNo) {
+		return session.selectList("funding.participationSelectOne", fundingNo);
+	}
+	@Override
+	public int fundingParticipationCountOne(int fundingNo) {
+		return session.selectOne("funding.fundingParticipationCountOne", fundingNo);
+	}
+
 	
 	
 	
@@ -181,11 +219,6 @@ public class FundingDaoImpl implements FundingDao{
 	@Override
 	public List<Funding> indexfundingList() {
 		return session.selectList("funding.indexfundingList");
-	}
-
-	@Override
-	public List<Funding> indexviewlist() {
-		return session.selectList("funding.indexviewlist");
 	}
 	
 	@Override
@@ -202,6 +235,25 @@ public class FundingDaoImpl implements FundingDao{
 	public List<Funding> indexRankingviewlist() {
 		return session.selectList("funding.indexRankingviewlist");
 	}
+	@Override
+	public String selectMyListJson(int memberNo) {
+		return session.selectOne("funding.selectMyListJson",memberNo);
+	}
+	
+	@Override
+	public int deleteMyListJson(Map<String, Object> param) {
+		return session.insert("funding.deleteMyListJson",param);
+	}
+	@Override
+	public int insertMyListJson(Map<String, Object> param) {
+		return session.insert("funding.insertMyListJson",param);
+	}
+	
+	@Override
+	public List<Funding> indexearlylist() {
+		// TODO Auto-generated method stub
+		return session.selectList("funding.indexearlylist");
+	}
 	//이승우
 	@Override
 	public List<Funding> fundingList(Map<String, Object> map) {
@@ -213,12 +265,22 @@ public class FundingDaoImpl implements FundingDao{
 	}
 	
 	@Override
+	public List<Funding> fundingListBanner() {
+		return session.selectList("funding.selectFundingListBanner");
+	}
+	
+	@Override
 	public List<Funding> earlyList(Map<String, Object> map) {
 		int offset = (int)map.get("offset");
 		int limit = (int)map.get("limit");
 		RowBounds rowBounds = new RowBounds(offset, limit);
 		log.debug("map@dap = {}", map);
 		return session.selectList("funding.selectEarlyList", map, rowBounds);
+	}
+	
+	@Override
+	public List<Funding> earlyListBanner() {
+		return session.selectList("funding.selectEarlyListBanner");
 	}
 	
 	@Override
@@ -247,25 +309,72 @@ public class FundingDaoImpl implements FundingDao{
 		return session.selectOne("funding.likeCheck",map);
 	}
 	@Override
+	public Map<String, Object> alramCheck(Map<String, Object> map) {
+		return session.selectOne("funding.alramCheck",map);
+	}
+	@Override
 	public int insertLike(Map<String, Object> map) {
 		return session.insert("funding.insertLike",map);
+	}
+	@Override
+	public int insertAlram(Map<String, Object> map) {
+		return session.insert("funding.insertAlram",map);
 	}
 	@Override
 	public int updateLike(Map<String, Object> map) {
 		return session.update("funding.updateLike",map);
 	}
 	@Override
+	public int updateAlram(Map<String, Object> map) {
+		return session.update("funding.updateAlram",map);
+	}
+	@Override
 	public int likeCount(Map<String, Object> map) {
 		return session.selectOne("funding.likeCount", map);
 	}
 	@Override
-	public int likeStatusCheck(int memberNo) {
-		return session.selectOne("funding.likeStatusCheck", memberNo);
+	public int likeStatusCheck(Map<String, Integer> map) {
+		return session.selectOne("funding.likeStatusCheck", map);
+	}
+	@Override
+	public int alramStatusCheck(int memberNo) {
+		return session.selectOne("funding.alramStatusCheck", memberNo);
 	}
 	@Override
 	public List<Reward> selectRewardList(int fundingNo) {
 		return session.selectList("funding.selectRewardList", fundingNo);
 	}
+	@Override
+	public int insertFundingParticipation(FundingParticipation fp) {
+		return session.insert("funding.insertFundingParticipation", fp);
+	}
+	@Override
+	public int insertChat(MessageVo msg) {
+		return session.insert("funding.insertChat",msg);
+	}
+	@Override
+	public List<MessageVo> selectChatList(int fundingNo) {
+		return session.selectList("funding.selectChatList",fundingNo);
+	}
+	@Override
+	public int fundingViewCountUp(int fundingNo) {
+		return session.update("funding.fundingViewCountUp",fundingNo);
+	}
+	@Override
+	public List<EarlyStartMessage> selectEarlyMemberList( ) {
+		return session.selectList("funding.selectEarlyMemberList");
+	}
+	@Override
+	public int sendAlramMessage(EarlyStartMessage earlyMember) {
+		return session.insert("funding.sendAlramMessage", earlyMember);
+	}
+
+	
+	
+	
+	
+	
+	
 
 	
 	

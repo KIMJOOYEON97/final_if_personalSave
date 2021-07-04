@@ -8,7 +8,7 @@ import com.kh.interactFunding.member.model.vo.Member;
 import com.kh.interactFunding.member.model.vo.Msg;
 
 public interface MemberDao {
-
+	//김윤수
 	int selectEmailCheck(Map<String, Object> map);
 
 	int insertMemberIf(Member member);
@@ -32,7 +32,20 @@ public interface MemberDao {
 	int sendMsg(Msg msg);
 
 	int msgReadStatusChg(int no);
+	
+	int insertCertificationCode(Map<String, Object> param);
+	
+	Map<String, String> selectOneCertification(Member member);
+	
+	int changePassword(Map<String, Object> map);
 
+	int deleteCertificationCode(Map<String, Object> map);
+
+	Member selectOneMemberKakao(Member m);
+	
+	int inserMemberKakao(Member member);
+	
+	int selectOneBlackList(Member member);
 	//김윤수
 	
 	//김경태
@@ -40,10 +53,14 @@ public interface MemberDao {
 	//김주연
 	int savePhone(Map<String, Object> map);
 	//박요한
+
 	
 	//배기원
 	
 	//이승우
 	
 	//천호현
+
+	String selectOneMemberPoint(int memberNo);
+
 }
